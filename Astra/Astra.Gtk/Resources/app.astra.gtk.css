@@ -17,3 +17,11 @@
 .post_menu_button:hover {
     background-color: rgba(0, 0, 0, 0.15);
 }
+
+.post_repost_button_toggled {
+    background-image: image(rgba(54, 186, 152, 0.15));
+}
+
+.post_love_button_toggled {
+    background-image: image(rgba(232, 37, 97, 0.15));
+}

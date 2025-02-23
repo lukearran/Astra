@@ -11,7 +11,7 @@ using Serilog;
 using Serilog.Extensions.Logging;
 
 Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Debug()
+    .MinimumLevel.Information()
     .WriteTo.Console()
     .CreateLogger();
 
