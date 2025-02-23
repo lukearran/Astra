@@ -1,5 +1,6 @@
 using Astra.Gtk.Extensions;
 using Astra.Gtk.Functions;
+using FishyFlip.Lexicon.App.Bsky.Embed;
 using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gtk.Internal;
 using Builder = Gtk.Builder;
@@ -29,6 +30,12 @@ public class StatusItem : ListBoxRow
     
     [global::Gtk.Connect("heart_button")] private readonly ToggleButton? _heartButton = null;
     [global::Gtk.Connect("heart_button_content")] private readonly Adw.ButtonContent? _heartButtonContent = null;
+    // Embedded post content
+    [global::Gtk.Connect("embedded_card")] private readonly global::Gtk.Frame? _embeddedContentFrame = null;
+    [global::Gtk.Connect("embedded_card_thumbnail")] private readonly global::Gtk.Picture? _embeddedContentThumbnail = null;
+    [global::Gtk.Connect("embedded_card_headline")] private readonly global::Gtk.Label? _embeddedContentHeadline = null;
+    [global::Gtk.Connect("embedded_card_description")] private readonly global::Gtk.Label? _embeddedContentDescription = null;
+    [global::Gtk.Connect("embedded_card_link")] private readonly global::Gtk.Label? _embeddedContentLink = null;
 
     private StatusItem(Builder builder, PostView content) : base(new ListBoxRowHandle(builder.GetPointer("_root"), false))
     {
@@ -46,6 +53,7 @@ public class StatusItem : ListBoxRow
         _postHandleSub?.SetText(subContent);
 
         // Set markdown content
+        _postContent?.SetVisible(!string.IsNullOrEmpty(content.PostRecord?.Text));
         _postContent?.SetText(content.PostRecord?.Text ?? string.Empty);
         
         // Register "Reply" button click event
@@ -72,12 +80,63 @@ public class StatusItem : ListBoxRow
         {
             _ = TrySetProfilePicture(content.Author.Avatar);
         }
+        
+        // Fire and forget setting the embedded content
+        if (content.PostRecord?.Embed != null)
+        {
+            _ = SetEmbeddedContent(content);
+        }
     }
 
     public StatusItem(PostView content) 
         : this(new Builder("StatusItem.ui"), content)
     {
         
+    }
+    
+    private async Task SetEmbeddedContent(PostView content)
+    {
+        // Ignore, if there is no embed content
+        if (content.PostRecord?.Embed == null
+            && _embeddedContentFrame == null
+            && _embeddedContentThumbnail == null
+            && _embeddedContentHeadline == null
+            && _embeddedContentDescription == null
+            && _embeddedContentLink == null)
+        {
+            return;
+        }
+        
+        // Get embedded external
+        if (content.Embed is not ViewExternal externalEmbedded)
+        {
+            return;
+        }
+        
+        // Make the frame visible
+        _embeddedContentFrame?.SetVisible(true);
+        
+        // Set the headline
+        _embeddedContentHeadline?.SetLabel(externalEmbedded.External.Title);
+        
+        // Set the description
+        _embeddedContentDescription?.SetLabel(externalEmbedded.External.Description);
+        
+        // Set the link
+        _embeddedContentLink?.SetLabel(externalEmbedded.External.Uri);
+        
+        // Set the thumbnail
+        if (!string.IsNullOrEmpty(externalEmbedded.External.Thumb))
+        {
+            // Download the external thumbnail
+            var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(externalEmbedded.External.Thumb);
+            
+            // Set the picture
+            if (thumbnailBytes != null && _embeddedContentThumbnail != null)
+            {
+                _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
+            }
+        }
     }
 
     private async Task TrySetProfilePicture(string profilePictureUrl)

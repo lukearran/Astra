@@ -29,3 +29,12 @@
 .handle_display_name {
     font-weight: bold;
 }
+
+.embedded_headline {
+    font-weight: bold;
+    font-size: 15px;
+}
+
+.embedded_link {
+    opacity: 0.5;
+}

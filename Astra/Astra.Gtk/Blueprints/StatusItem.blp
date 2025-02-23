@@ -38,9 +38,11 @@ ListBoxRow _root {
           label: "Unknown";
           use-markup: true;
 
-          styles ["handle_display_name"]
+          styles [
+            "handle_display_name"
+          ]
         }
-        
+
         Label post_handle_sub {
           margin-start: 5;
           opacity: 0.5;
@@ -60,6 +62,74 @@ ListBoxRow _root {
         }
       }
 
+      Frame embedded_card {
+        visible: false;
+        valign: center;
+        hexpand: false;
+        height-request: 350;
+        width-request: 300;
+        margin-top: 18;
+        margin-bottom: 18;
+        margin-end: 6;
+
+        Box {
+          orientation: vertical;
+          height-request: 200;
+
+          Picture embedded_card_thumbnail {
+            halign: center;
+            valign: center;
+            can-shrink: true;
+            content-fit: cover;
+            width-request: 300;
+          }
+
+          Box {
+            margin-top: 10;
+            margin-bottom: 10;
+            margin-start: 10;
+            margin-end: 10;
+            hexpand: true;
+            valign: end;
+            orientation: vertical;
+
+            Label embedded_card_headline {
+              halign: start;
+              wrap: true;
+              justify: left;
+              single-line-mode: true;
+
+              styles [
+                "embedded_headline",
+              ]
+
+              label: _("Oops, something went wrong");
+            }
+
+            Label embedded_card_description {
+              halign: start;
+              wrap: true;
+              max-width-chars: 50;
+              wrap-mode: word_char;
+              justify: left;
+              lines: 2;
+            }
+
+            Label embedded_card_link {
+              halign: start;
+              wrap: true;
+              justify: left;
+              margin-top: 5;
+              lines: 4;
+
+              styles [
+                "embedded_link",
+              ]
+            }
+          }
+        }
+      }
+
       Box {
         margin-start: 5;
         margin-top: 5;
@@ -70,10 +140,10 @@ ListBoxRow _root {
         Button reply_button {
           margin-end: 30;
           valign: center;
-          
+
           Adw.ButtonContent reply_button_content {
-              label: _("25");
-              icon-name: "chat-bubble-empty-symbolic";
+            label: _("25");
+            icon-name: "chat-bubble-empty-symbolic";
           }
 
           styles [
@@ -86,10 +156,10 @@ ListBoxRow _root {
         ToggleButton repost_button {
           margin-end: 30;
           valign: center;
-          
+
           Adw.ButtonContent repost_button_content {
-              label: _("25");
-              icon-name: "arrow-hook-right-horizontal-symbolic";
+            label: _("25");
+            icon-name: "arrow-hook-right-horizontal-symbolic";
           }
 
           styles [
@@ -102,10 +172,10 @@ ListBoxRow _root {
         ToggleButton heart_button {
           margin-end: 30;
           valign: center;
-          
+
           Adw.ButtonContent heart_button_content {
-              label: _("25");
-              icon-name: "heart-outline-thick-symbolic";
+            label: _("25");
+            icon-name: "heart-outline-thick-symbolic";
           }
 
           styles [
@@ -114,14 +184,14 @@ ListBoxRow _root {
             "opaque",
           ]
         }
-        
+
         MenuButton status_menu_button {
           menu-model: secondary_button_menu;
-        
+
           Adw.ButtonContent {
-              icon-name: "menu-large-symbolic";
+            icon-name: "menu-large-symbolic";
           }
-          
+
           styles [
             "transparent",
             "post_menu_button",
