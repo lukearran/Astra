@@ -35,8 +35,10 @@ ListBoxRow _root {
 
         Label post_handle {
           margin-start: 5;
-          label: "<b>Tom Warren</b>";
+          label: "Unknown";
           use-markup: true;
+
+          styles ["handle_display_name"]
         }
         
         Label post_handle_sub {
@@ -63,6 +65,7 @@ ListBoxRow _root {
         margin-top: 5;
         orientation: horizontal;
         spacing: 0;
+        width-request: 300;
 
         Button reply_button {
           margin-end: 30;

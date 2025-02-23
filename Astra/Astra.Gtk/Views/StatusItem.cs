@@ -1,10 +1,11 @@
-using Adw.Internal;
 using Astra.Gtk.Extensions;
+using Astra.Gtk.Functions;
 using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gtk.Internal;
 using Builder = Gtk.Builder;
 using Button = Gtk.Button;
 using ListBoxRow = Gtk.ListBoxRow;
+using Task = System.Threading.Tasks.Task;
 using ToggleButton = Gtk.ToggleButton;
 
 namespace Astra.Gtk.Views;
@@ -43,8 +44,6 @@ public class StatusItem : ListBoxRow
         // Set the handle sub-content
         var subContent = GetSubHandle(content);
         _postHandleSub?.SetText(subContent);
-        
-        // TODO: Set profile picture from network URL
 
         // Set markdown content
         _postContent?.SetText(content.PostRecord?.Text ?? string.Empty);
@@ -67,9 +66,46 @@ public class StatusItem : ListBoxRow
         {
             _heartButton.OnToggled += HeartButtonOnToggled;
         }
+        
+        // Fire and forget setting the profile picture
+        if (!string.IsNullOrEmpty(content.Author.Avatar))
+        {
+            _ = TrySetProfilePicture(content.Author.Avatar);
+        }
     }
 
-    public StatusItem(PostView content) : this(new Builder("StatusItem.ui"), content) { }
+    public StatusItem(PostView content) 
+        : this(new Builder("StatusItem.ui"), content)
+    {
+        
+    }
+
+    private async Task TrySetProfilePicture(string profilePictureUrl)
+    {
+        try
+        {
+            if (_profilePicture == null)
+            {
+                return;
+            }
+            
+            // Get the bytes
+            var bytes = await NetworkFunction.GetDataInBytesAsync(profilePictureUrl);
+            
+            if (bytes == null)
+            {
+                return;
+            }
+            
+            // Set the profile picture
+            _profilePicture.CustomImage = Gdk.Texture.NewFromBytes(bytes);
+        }
+        catch (System.Exception ex)
+        {
+            // TODO: Get DI logger
+            Console.WriteLine("Failed to set profile picture: " + ex.Message);
+        }
+    }
 
     private string GetSubHandle(PostView content)
     {

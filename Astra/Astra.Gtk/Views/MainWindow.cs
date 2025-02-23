@@ -21,7 +21,7 @@ public class MainWindow : Adw.ApplicationWindow
         string name) : base(new ApplicationWindowHandle(builder.GetPointer(name), false))
     {
         builder.Connect(this);
-            
+
         _sessionService = sessionService;
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;

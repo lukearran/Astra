@@ -25,3 +25,7 @@
 .post_love_button_toggled {
     background-image: image(rgba(232, 37, 97, 0.15));
 }
+
+.handle_display_name {
+    font-weight: bold;
+}
