@@ -1,0 +1,101 @@
+using Gtk 4.0;
+using Adw 1;
+
+Gtk.Box not_built_box {
+  spacing: 10;
+  orientation: horizontal;
+  hexpand: true;
+  vexpand: true;
+  halign: center;
+  valign: center;
+
+  Gtk.Image {
+    icon-name: "dialog-information-symbolic";
+    pixel-size: 48;
+  }
+
+  Gtk.Label {
+    margin-start: 5;
+    label: "This feature is not ready yet.";
+  }
+}
+
+Adw.ApplicationWindow main_window {
+  default-width: 800;
+  default-height: 600;
+  width-request: 360;
+  height-request: 360;
+  title: "BlueAdw";
+
+  Adw.ToolbarView {
+    [top]
+    Adw.HeaderBar {
+      show-title: true;
+
+      [end]
+      MenuButton {
+        tooltip-text: _("Main Menu");
+        icon-name: "view-more-symbolic";
+        menu-model: primary_menu;
+        primary: true;
+      }
+    }
+
+    Adw.ViewStack view_stack {
+      Adw.ViewStackPage {
+        name: "home";
+        title: "Home";
+        icon-name: "go-home-symbolic";
+
+        child: Gtk.ScrolledWindow {
+          hscrollbar-policy: never;
+          vexpand: true;
+          child: Gtk.ListBox status_list_box {
+            hexpand: false;
+            vexpand: true;
+            width-request: 300;
+            selection-mode: none;
+            show-separators: true;
+          };
+        };
+      }
+
+      Adw.ViewStackPage {
+        name: "search";
+        title: "Search";
+        icon-name: "edit-find-symbolic";
+        child: not_built_box;
+      }
+
+      Adw.ViewStackPage {
+        name: "notifications";
+        title: "Notifications";
+        icon-name: "mail-unread-symbolic";
+        child: not_built_box;
+      }
+
+      Adw.ViewStackPage {
+        name: "profile";
+        title: "Profile";
+        icon-name: "user-info-symbolic";
+        child: not_built_box;
+      }
+    }
+  }
+}
+
+menu primary_menu {
+  section {
+    item (_("Preferences"), "app.preferences")
+  }
+
+  section {
+    item (_("Keyboard Shortcuts"), "app.keyboardShortcuts")
+    item (_("Help"), "app.help")
+    item (_("About BlueAdw"), "app.about")
+  }
+
+  section {
+    item (_("Quit"), "app.quit")
+  }
+}

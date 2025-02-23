@@ -1,0 +1,19 @@
+.transparent {
+    background-color: transparent;
+}
+
+.post_reply_button:hover {
+    background-color: rgba(232, 231, 171, 0.15);
+}
+
+.post_repost_button:hover {
+    background-color: rgba(54, 186, 152, 0.15);
+}
+
+.post_love_button:hover {
+    background-color: rgba(232, 37, 97, 0.15);
+}
+
+.post_menu_button:hover {
+    background-color: rgba(0, 0, 0, 0.15);
+}

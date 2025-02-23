@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FishyFlip" Version="3.4.1" />
+      <PackageReference Include="GirCore.Adw-1" Version="0.6.2" />
+      <PackageReference Include="GirCore.Gtk-4.0" Version="0.6.2" />
+      <PackageReference Include="Serilog" Version="4.2.0" />
+      <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Astra.AtProtocol.Client\Astra.AtProtocol.Client.csproj" />
+      <ProjectReference Include="..\Astra.AtProtocol.Common\Astra.AtProtocol.Common.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Blueprints\MainWindow.ui" />
+    </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="echo Compiling extra resources..." />
+        <Exec Command="blueprint-compiler batch-compile ./Blueprints ./Blueprints ./Blueprints/*.blp" />
+        <Exec Command="glib-compile-resources --sourcedir ./Resources ./Resources/app.astra.gtk.gresource.xml --target=$(OutDir)/app.astra.gtk.gresource" />
+    </Target>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="rm ./Blueprints/*.ui" />
+    </Target>
+
+    <Target Name="EmbedUIFiles" BeforeTargets="BeforeResGen">
+        <ItemGroup>
+            <EmbeddedResource Include="Blueprints\*.ui" Type="Non-Resx" WithCulture="false" />
+        </ItemGroup>
+    </Target>
+
+</Project>

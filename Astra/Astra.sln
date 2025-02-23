@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.Gtk", "Astra.Gtk\Astra.Gtk.csproj", "{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Client", "Astra.AtProtocol.Client\Astra.AtProtocol.Client.csproj", "{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Common", "Astra.AtProtocol.Common\Astra.AtProtocol.Common.csproj", "{CE843CA6-05CE-4789-8DAF-643FA4800905}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

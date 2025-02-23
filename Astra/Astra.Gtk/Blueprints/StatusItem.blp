@@ -1,0 +1,137 @@
+using Gtk 4.0;
+using Adw 1;
+
+ListBoxRow _root {
+  activatable: false;
+  selectable: false;
+  hexpand: true;
+
+  Box {
+    margin-top: 10;
+    margin-start: 10;
+    margin-end: 10;
+    margin-bottom: 10;
+    orientation: horizontal;
+    hexpand: true;
+    vexpand: true;
+    halign: start;
+    valign: start;
+
+    Box {
+      orientation: vertical;
+
+      Adw.Avatar profile_picture {
+        size: 50;
+        show-initials: false;
+      }
+    }
+
+    Box {
+      margin-start: 10;
+      orientation: vertical;
+
+      Box {
+        orientation: horizontal;
+
+        Label post_handle {
+          margin-start: 5;
+          label: "<b>Tom Warren</b>";
+          use-markup: true;
+        }
+        
+        Label post_handle_sub {
+          margin-start: 5;
+          opacity: 0.5;
+          label: "@tomwarren.co.uk · 4m";
+        }
+      }
+
+      Box {
+        Label post_content {
+          margin-start: 5;
+          margin-top: 10;
+          wrap: true;
+          lines: 250;
+          justify: left;
+          use-markup: true;
+          label: "Hello world! This is a great day.";
+        }
+      }
+
+      Box {
+        margin-start: 5;
+        margin-top: 5;
+        orientation: horizontal;
+        spacing: 0;
+
+        ToggleButton reply-button {
+          margin-end: 30;
+          valign: center;
+          
+          Adw.ButtonContent {
+              label: _("25");
+              icon-name: "chat-bubble-empty-symbolic";
+          }
+
+          styles [
+            "transparent",
+            "post_reply_button",
+            "opaque",
+          ]
+        }
+
+        ToggleButton repost-button {
+          margin-end: 30;
+          valign: center;
+          
+          Adw.ButtonContent {
+              label: _("25");
+              icon-name: "arrow-hook-right-horizontal-symbolic";
+          }
+
+          styles [
+            "transparent",
+            "post_repost_button",
+            "opaque",
+          ]
+        }
+
+        ToggleButton heart-button {
+          margin-end: 30;
+          valign: center;
+          
+          Adw.ButtonContent {
+              label: _("25");
+              icon-name: "heart-outline-thick-symbolic";
+          }
+
+          styles [
+            "transparent",
+            "post_love_button",
+            "opaque",
+          ]
+        }
+        
+        MenuButton status-menu-button {
+          menu-model: secondary_button_menu;
+        
+          Adw.ButtonContent {
+              icon-name: "menu-large-symbolic";
+          }
+          
+          styles [
+            "transparent",
+            "post_menu_button",
+            "opaque",
+          ]
+        }
+      }
+    }
+  }
+}
+
+menu secondary_button_menu {
+  item ("Item 1")
+  item ("Item 2")
+  item ("Item 3")
+}

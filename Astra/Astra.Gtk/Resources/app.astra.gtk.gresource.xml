@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/app/astra/gtk">
+        <file alias="style.css">app.astra.gtk.css</file>
+    </gresource>
+    <gresource prefix="/app/astra/gtk/icons/scalable/status/">
+        <file preprocess="xml-stripblanks">arrow-hook-right-horizontal-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">chat-bubble-empty-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">heart-outline-thick-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">menu-large-symbolic.svg</file>
+    </gresource>
+</gresources>
