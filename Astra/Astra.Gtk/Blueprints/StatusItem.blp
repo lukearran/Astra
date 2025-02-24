@@ -66,20 +66,26 @@ ListBoxRow _root {
         visible: false;
         valign: center;
         hexpand: false;
-        height-request: 350;
+        vexpand: true;
         width-request: 500;
         margin-top: 18;
         margin-bottom: 18;
         margin-end: 6;
 
+        styles [
+          "embedded_card",
+        ]
+
         Box {
           orientation: vertical;
 
           Picture embedded_card_thumbnail {
+            visible: false;
             halign: center;
             valign: center;
             can-shrink: true;
             content-fit: cover;
+            height-request: 300;
           }
 
           Box {
