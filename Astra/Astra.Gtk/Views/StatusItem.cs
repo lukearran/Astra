@@ -1,5 +1,6 @@
 using Astra.Gtk.Extensions;
 using Astra.Gtk.Functions;
+using Astra.Gtk.Helpers;
 using FishyFlip.Lexicon.App.Bsky.Embed;
 using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gtk.Internal;
@@ -123,7 +124,8 @@ public class StatusItem : ListBoxRow
         _embeddedContentDescription?.SetLabel(externalEmbedded.External.Description.Trim());
         
         // Set the link
-        _embeddedContentLink?.SetLabel(externalEmbedded.External.Uri);
+        _embeddedContentLink?.SetLabel(
+            UrlHelpers.StripUrlToDomain(externalEmbedded.External.Uri));
         
         // Set the thumbnail
         if (!string.IsNullOrEmpty(externalEmbedded.External.Thumb))
