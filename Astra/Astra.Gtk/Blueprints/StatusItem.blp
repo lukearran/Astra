@@ -67,21 +67,19 @@ ListBoxRow _root {
         valign: center;
         hexpand: false;
         height-request: 350;
-        width-request: 300;
+        width-request: 500;
         margin-top: 18;
         margin-bottom: 18;
         margin-end: 6;
 
         Box {
           orientation: vertical;
-          height-request: 200;
 
           Picture embedded_card_thumbnail {
             halign: center;
             valign: center;
             can-shrink: true;
             content-fit: cover;
-            width-request: 300;
           }
 
           Box {
@@ -107,12 +105,19 @@ ListBoxRow _root {
             }
 
             Label embedded_card_description {
+              height-request: 5;
               halign: start;
               wrap: true;
+              ellipsize: end;
               max-width-chars: 50;
+              margin-top: 5;
               wrap-mode: word_char;
               justify: left;
               lines: 2;
+
+              styles [
+                "embedded_description",
+              ]
             }
 
             Label embedded_card_link {

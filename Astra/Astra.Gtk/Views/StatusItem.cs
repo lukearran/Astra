@@ -117,10 +117,10 @@ public class StatusItem : ListBoxRow
         _embeddedContentFrame?.SetVisible(true);
         
         // Set the headline
-        _embeddedContentHeadline?.SetLabel(externalEmbedded.External.Title);
+        _embeddedContentHeadline?.SetLabel(externalEmbedded.External.Title.Trim());
         
         // Set the description
-        _embeddedContentDescription?.SetLabel(externalEmbedded.External.Description);
+        _embeddedContentDescription?.SetLabel(externalEmbedded.External.Description.Trim());
         
         // Set the link
         _embeddedContentLink?.SetLabel(externalEmbedded.External.Uri);
@@ -128,13 +128,20 @@ public class StatusItem : ListBoxRow
         // Set the thumbnail
         if (!string.IsNullOrEmpty(externalEmbedded.External.Thumb))
         {
-            // Download the external thumbnail
-            var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(externalEmbedded.External.Thumb);
-            
-            // Set the picture
-            if (thumbnailBytes != null && _embeddedContentThumbnail != null)
+            try
             {
-                _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
+                // Download the external thumbnail
+                var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(externalEmbedded.External.Thumb);
+
+                // Set the picture
+                if (thumbnailBytes != null && _embeddedContentThumbnail != null)
+                {
+                    _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
+                }
+            }
+            catch
+            {
+                return;
             }
         }
     }

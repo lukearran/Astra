@@ -32,9 +32,13 @@
 
 .embedded_headline {
     font-weight: bold;
-    font-size: 15px;
+    font-size: 17px;
 }
 
 .embedded_link {
     opacity: 0.5;
+}
+
+.embedded_description {
+    opacity: 0.9;
 }
