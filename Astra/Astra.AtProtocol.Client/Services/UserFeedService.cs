@@ -12,7 +12,7 @@ public class UserFeedService(ATProtocol protocol) : BaseService(protocol), IUser
         var (timelineOutputResult, error) = await Protocol.GetTimelineAsync(
             limit: limit,
             cancellationToken: token);
-
+        
         if (timelineOutputResult is null)
         {
             return new TimelineResult(

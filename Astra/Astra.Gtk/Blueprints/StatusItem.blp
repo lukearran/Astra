@@ -62,6 +62,25 @@ ListBoxRow _root {
         }
       }
 
+      ScrolledWindow picture_flowbox {
+        visible: false;
+        valign: start;
+        halign: start;
+        hexpand: true;
+        vexpand: true;
+        margin-top: 18;
+        margin-bottom: 18;
+        margin-end: 6;
+        propagate-natural-width: true;
+        propagate-natural-height: true;
+        height-request: 400;
+
+        Box picture_container_box {
+          orientation: horizontal;
+          spacing: 20;
+        }
+      }
+
       Frame embedded_card {
         visible: false;
         valign: center;

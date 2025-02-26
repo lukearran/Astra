@@ -46,3 +46,7 @@
 .embedded_card:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
+
+.photo_card {
+    background-color: rgba(255, 255, 255, 0.05);
+}

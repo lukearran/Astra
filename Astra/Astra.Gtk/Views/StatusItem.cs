@@ -3,11 +3,15 @@ using Astra.Gtk.Functions;
 using Astra.Gtk.Helpers;
 using FishyFlip.Lexicon.App.Bsky.Embed;
 using FishyFlip.Lexicon.App.Bsky.Feed;
+using Gdk;
+using Gtk;
 using Gtk.Internal;
 using Builder = Gtk.Builder;
 using Button = Gtk.Button;
+using Frame = Gtk.Frame;
 using GestureClick = Gtk.GestureClick;
 using ListBoxRow = Gtk.ListBoxRow;
+using Picture = Gtk.Picture;
 using Task = System.Threading.Tasks.Task;
 using ToggleButton = Gtk.ToggleButton;
 
@@ -19,7 +23,8 @@ public class StatusItem : ListBoxRow
     private readonly PostView _content;
 
     // Posted By, Handles, and Posted At
-    [global::Gtk.Connect("post_handle")] private readonly global::Gtk.Label? _postHandle = null;
+    [global::Gtk.Connect("post_handle")]
+    private readonly global::Gtk.Label? _postHandle = null;
 
     [global::Gtk.Connect("post_handle_sub")]
     private readonly global::Gtk.Label? _postHandleSub = null;
@@ -28,26 +33,31 @@ public class StatusItem : ListBoxRow
     private readonly Adw.Avatar? _profilePicture = null;
 
     // Content of the post
-    [global::Gtk.Connect("post_content")] private readonly global::Gtk.Label? _postContent = null;
+    [global::Gtk.Connect("post_content")]
+    private readonly global::Gtk.Label? _postContent = null;
 
     // Buttons
-    [global::Gtk.Connect("reply_button")] private readonly Button? _replyButton = null;
+    [global::Gtk.Connect("reply_button")]
+    private readonly Button? _replyButton = null;
 
     [global::Gtk.Connect("reply_button_content")]
     private readonly Adw.ButtonContent? _replyButtonContent = null;
 
-    [global::Gtk.Connect("repost_button")] private readonly ToggleButton? _repostButton = null;
+    [global::Gtk.Connect("repost_button")]
+    private readonly ToggleButton? _repostButton = null;
 
     [global::Gtk.Connect("repost_button_content")]
     private readonly Adw.ButtonContent? _repostButtonContent = null;
 
-    [global::Gtk.Connect("heart_button")] private readonly ToggleButton? _heartButton = null;
+    [global::Gtk.Connect("heart_button")]
+    private readonly ToggleButton? _heartButton = null;
 
     [global::Gtk.Connect("heart_button_content")]
     private readonly Adw.ButtonContent? _heartButtonContent = null;
 
-    // Embedded post content
-    [global::Gtk.Connect("embedded_card")] private readonly global::Gtk.Frame? _embeddedContentFrame = null;
+    // Embedded external link content
+    [global::Gtk.Connect("embedded_card")]
+    private readonly global::Gtk.Frame? _embeddedContentFrame = null;
 
     [global::Gtk.Connect("embedded_card_thumbnail")]
     private readonly global::Gtk.Picture? _embeddedContentThumbnail = null;
@@ -60,6 +70,13 @@ public class StatusItem : ListBoxRow
 
     [global::Gtk.Connect("embedded_card_link")]
     private readonly global::Gtk.Label? _embeddedContentLink = null;
+    
+    // Embedded photo content
+    [global::Gtk.Connect("picture_container_box")]
+    private readonly global::Gtk.Box? _pictureContainerBox = null;
+    
+    [global::Gtk.Connect("picture_flowbox")]
+    private readonly global::Gtk.ScrolledWindow? _pictureScrollWindowContainer = null;
 
     private StatusItem(Builder builder, PostView content) : base(new ListBoxRowHandle(builder.GetPointer("_root"),
         false))
@@ -120,11 +137,88 @@ public class StatusItem : ListBoxRow
     {
     }
 
-    private async Task SetEmbeddedContent(PostView content)
+    private Task SetEmbeddedContent(PostView content)
     {
         // Ignore, if there is no embed content
-        if (content.PostRecord?.Embed == null
-            && _embeddedContentFrame == null
+        if (content.PostRecord?.Embed == null)
+        {
+            return Task.CompletedTask;
+        }
+        
+        _ = content.Embed switch
+        {
+            ViewExternal externalEmbedded => SetExternalLinkContent(externalEmbedded),
+            ViewImages externalImages => SetExternalImagesContent(externalImages),
+            ViewImage externalImage => SetExternalImagesContent(new ViewImages() { Images = [ externalImage ]}),
+            // TODO: Video
+            // TODO: Embedded sub-status (quote)
+            _ => Task.CompletedTask
+        };
+        return Task.CompletedTask;
+    }
+
+    private async Task SetExternalImagesContent(ViewImages images)
+    {
+        if (_pictureContainerBox == null || _pictureScrollWindowContainer == null)
+        {
+            return;
+        }
+
+        _pictureScrollWindowContainer.SetVisible(true);
+
+        var pos = 0;
+        
+        // Try to get picture
+        foreach (var image in images.Images)
+        {
+            pos++;
+
+            if (pos > 4)
+            {
+                // Only display up to 4 images on a post.
+                // User can view further images after clicking on thumbnail
+                // TODO: If more than 4 display a widget indicating that the are additional
+                // photos to view on the post.
+                break;
+            }
+            
+            try
+            {
+                var pictureBytes = await NetworkFunction.GetDataInBytesAsync(image.Thumb);
+
+                if (pictureBytes == null)
+                {
+                    continue;
+                }
+                
+                var pictureContainer = new Frame();
+                pictureContainer.AddCssClass("photo_card");
+                pictureContainer.Halign = Align.Start;
+
+                var pictureTexture = Texture.NewFromBytes(pictureBytes);
+                var pictureWidget = Picture.NewForPaintable(pictureTexture);
+
+                pictureWidget.ContentFit = ContentFit.Cover;
+                pictureWidget.Halign = Align.Center;
+                pictureWidget.Valign = Align.Center;
+                pictureWidget.KeepAspectRatio = false;
+                pictureWidget.CanShrink = true;
+
+                pictureContainer.Child = pictureWidget;
+                    
+                _pictureContainerBox.Append(pictureContainer);
+            }
+            catch (SystemException ex)
+            {
+               Console.Write(ex);
+            }
+        }
+
+    }
+    
+    private async Task SetExternalLinkContent(ViewExternal externalContent)
+    {
+        if ( _embeddedContentFrame == null
             && _embeddedContentThumbnail == null
             && _embeddedContentHeadline == null
             && _embeddedContentDescription == null
@@ -132,41 +226,32 @@ public class StatusItem : ListBoxRow
         {
             return;
         }
+        
+        _embeddedContentFrame?.SetVisible(true);
 
-        if (content.Embed is ViewExternal externalEmbedded)
+        _embeddedContentHeadline?.SetLabel(externalContent.External.Title.Trim());
+
+        _embeddedContentDescription?.SetLabel(externalContent.External.Description.Trim());
+
+        _embeddedContentLink?.SetLabel(
+            externalContent.External.Uri.ParseRegex(
+                RegexHelpers.DomainStripRegex()));
+
+        // Make the frame of the embedded link clickable
+        var clickController = new GestureClick();
+        clickController.OnPressed += (_, _) => SystemFunction.TryOpenUrlInBrowser(externalContent.External.Uri);
+
+        _embeddedContentFrame?.AddController(clickController);
+
+        if (!string.IsNullOrEmpty(externalContent.External.Thumb))
         {
-            _embeddedContentFrame?.SetVisible(true);
+            _embeddedContentThumbnail?.SetVisible(true);
 
-            _embeddedContentHeadline?.SetLabel(externalEmbedded.External.Title.Trim());
+            var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(externalContent.External.Thumb);
 
-            _embeddedContentDescription?.SetLabel(externalEmbedded.External.Description.Trim());
-
-            _embeddedContentLink?.SetLabel(
-                UrlHelpers.StripUrlToDomain(externalEmbedded.External.Uri));
-
-            // Make the frame of the embedded link clickable
-            var clickController = new GestureClick();
-            clickController.OnPressed += (_, _) => SystemFunction.TryOpenUrlInBrowser(externalEmbedded.External.Uri);
-
-            _embeddedContentFrame?.AddController(clickController);
-
-            if (!string.IsNullOrEmpty(externalEmbedded.External.Thumb))
+            if (thumbnailBytes != null && _embeddedContentThumbnail != null)
             {
-                try
-                {
-                    _embeddedContentThumbnail?.SetVisible(true);
-
-                    var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(externalEmbedded.External.Thumb);
-
-                    if (thumbnailBytes != null && _embeddedContentThumbnail != null)
-                    {
-                        _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
-                    }
-                }
-                catch
-                {
-                    return;
-                }
+                _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
             }
         }
     }
