@@ -3,6 +3,7 @@ using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Common.Providers;
 using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gtk;
+using Microsoft.Extensions.Logging;
 
 namespace Astra.Gtk.Views;
 
@@ -11,9 +12,12 @@ public class MainWindow : Adw.ApplicationWindow
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
     private readonly ICredentialProvider _credentialProvider;
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger<MainWindow> _logger;
     private readonly Builder _builder;
 
     private MainWindow(
+        ILoggerFactory loggerFactory,
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
@@ -26,6 +30,8 @@ public class MainWindow : Adw.ApplicationWindow
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
         _builder = builder;
+        _loggerFactory = loggerFactory;
+        _logger = loggerFactory.CreateLogger<MainWindow>();
 
         _ = InitializeAt();
     }
@@ -34,8 +40,10 @@ public class MainWindow : Adw.ApplicationWindow
         Adw.Application application,
         ISessionService sessionService,
         IUserFeedService userFeedService,
-        ICredentialProvider credentialProvider)
+        ICredentialProvider credentialProvider,
+        ILoggerFactory loggerFactory)
         : this(
+            loggerFactory,
             sessionService,
             userFeedService,
             credentialProvider,
@@ -49,7 +57,8 @@ public class MainWindow : Adw.ApplicationWindow
     {
         ArgumentNullException.ThrowIfNull(_credentialProvider.Username);
         ArgumentNullException.ThrowIfNull(_credentialProvider.Password);
-            
+        
+        // TODO The following initialising process is just placeholder until later replaced with an async solution
         var loginSessionResult = await _sessionService.LoginWithPassword(
             identifier: _credentialProvider.Username,
             password: _credentialProvider.Password,
@@ -78,9 +87,8 @@ public class MainWindow : Adw.ApplicationWindow
 
     private void AddStatusUpdates(List<PostView> statusUpdates, ref ListBox statusListBox)
     {
-        foreach (var status in statusUpdates)
+        foreach (var row in statusUpdates.Select(status => new StatusItem(status, _loggerFactory)))
         {
-            var row = new StatusItem(status);
             statusListBox.Append(row);
         }
     }

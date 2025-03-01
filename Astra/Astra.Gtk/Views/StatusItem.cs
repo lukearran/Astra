@@ -6,6 +6,7 @@ using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gdk;
 using Gtk;
 using Gtk.Internal;
+using Microsoft.Extensions.Logging;
 using Builder = Gtk.Builder;
 using Button = Gtk.Button;
 using Frame = Gtk.Frame;
@@ -19,12 +20,14 @@ namespace Astra.Gtk.Views;
 
 public class StatusItem : ListBoxRow
 {
+    // Logger
+    private readonly ILogger<StatusItem> _logger;
+
     // Content model
     private readonly PostView _content;
 
     // Posted By, Handles, and Posted At
-    [global::Gtk.Connect("post_handle")]
-    private readonly global::Gtk.Label? _postHandle = null;
+    [global::Gtk.Connect("post_handle")] private readonly global::Gtk.Label? _postHandle = null;
 
     [global::Gtk.Connect("post_handle_sub")]
     private readonly global::Gtk.Label? _postHandleSub = null;
@@ -33,31 +36,26 @@ public class StatusItem : ListBoxRow
     private readonly Adw.Avatar? _profilePicture = null;
 
     // Content of the post
-    [global::Gtk.Connect("post_content")]
-    private readonly global::Gtk.Label? _postContent = null;
+    [global::Gtk.Connect("post_content")] private readonly global::Gtk.Label? _postContent = null;
 
     // Buttons
-    [global::Gtk.Connect("reply_button")]
-    private readonly Button? _replyButton = null;
+    [global::Gtk.Connect("reply_button")] private readonly Button? _replyButton = null;
 
     [global::Gtk.Connect("reply_button_content")]
     private readonly Adw.ButtonContent? _replyButtonContent = null;
 
-    [global::Gtk.Connect("repost_button")]
-    private readonly ToggleButton? _repostButton = null;
+    [global::Gtk.Connect("repost_button")] private readonly ToggleButton? _repostButton = null;
 
     [global::Gtk.Connect("repost_button_content")]
     private readonly Adw.ButtonContent? _repostButtonContent = null;
 
-    [global::Gtk.Connect("heart_button")]
-    private readonly ToggleButton? _heartButton = null;
+    [global::Gtk.Connect("heart_button")] private readonly ToggleButton? _heartButton = null;
 
     [global::Gtk.Connect("heart_button_content")]
     private readonly Adw.ButtonContent? _heartButtonContent = null;
 
     // Embedded external link content
-    [global::Gtk.Connect("embedded_card")]
-    private readonly global::Gtk.Frame? _embeddedContentFrame = null;
+    [global::Gtk.Connect("embedded_card")] private readonly global::Gtk.Frame? _embeddedContentFrame = null;
 
     [global::Gtk.Connect("embedded_card_thumbnail")]
     private readonly global::Gtk.Picture? _embeddedContentThumbnail = null;
@@ -70,20 +68,24 @@ public class StatusItem : ListBoxRow
 
     [global::Gtk.Connect("embedded_card_link")]
     private readonly global::Gtk.Label? _embeddedContentLink = null;
-    
+
     // Embedded photo content
     [global::Gtk.Connect("picture_container_box")]
     private readonly global::Gtk.Box? _pictureContainerBox = null;
-    
+
     [global::Gtk.Connect("picture_flowbox")]
     private readonly global::Gtk.ScrolledWindow? _pictureScrollWindowContainer = null;
 
-    private StatusItem(Builder builder, PostView content) : base(new ListBoxRowHandle(builder.GetPointer("_root"),
+    private StatusItem(ILoggerFactory loggerFactory, Builder builder, PostView content) : base(new ListBoxRowHandle(
+        builder.GetPointer("_root"),
         false))
     {
         builder.Connect(this);
 
-        // Set models
+        _logger = loggerFactory.CreateLogger<StatusItem>();
+
+        _logger.LogDebug("Creating StatusItem Widget for Post: {Post}", content.Uri);
+
         _content = content;
 
         // Set the handle label
@@ -132,8 +134,8 @@ public class StatusItem : ListBoxRow
         }
     }
 
-    public StatusItem(PostView content)
-        : this(new Builder("StatusItem.ui"), content)
+    public StatusItem(PostView content, ILoggerFactory loggerFactory)
+        : this(loggerFactory, new Builder("StatusItem.ui"), content)
     {
     }
 
@@ -144,12 +146,12 @@ public class StatusItem : ListBoxRow
         {
             return Task.CompletedTask;
         }
-        
+
         _ = content.Embed switch
         {
-            ViewExternal externalEmbedded => SetExternalLinkContent(externalEmbedded),
-            ViewImages externalImages => SetExternalImagesContent(externalImages),
-            ViewImage externalImage => SetExternalImagesContent(new ViewImages() { Images = [ externalImage ]}),
+            ViewExternal externalLink => SetExternalLinkContent(externalLink),
+            ViewImages images => SetExternalImagesContent(images),
+            ViewImage image => SetExternalImagesContent(new ViewImages() { Images = [image] }),
             // TODO: Video
             // TODO: Embedded sub-status (quote)
             _ => Task.CompletedTask
@@ -166,22 +168,8 @@ public class StatusItem : ListBoxRow
 
         _pictureScrollWindowContainer.SetVisible(true);
 
-        var pos = 0;
-        
-        // Try to get picture
         foreach (var image in images.Images)
         {
-            pos++;
-
-            if (pos > 4)
-            {
-                // Only display up to 4 images on a post.
-                // User can view further images after clicking on thumbnail
-                // TODO: If more than 4 display a widget indicating that the are additional
-                // photos to view on the post.
-                break;
-            }
-            
             try
             {
                 var pictureBytes = await NetworkFunction.GetDataInBytesAsync(image.Thumb);
@@ -190,7 +178,7 @@ public class StatusItem : ListBoxRow
                 {
                     continue;
                 }
-                
+
                 var pictureContainer = new Frame();
                 pictureContainer.AddCssClass("photo_card");
                 pictureContainer.Halign = Align.Start;
@@ -205,20 +193,19 @@ public class StatusItem : ListBoxRow
                 pictureWidget.CanShrink = true;
 
                 pictureContainer.Child = pictureWidget;
-                    
+
                 _pictureContainerBox.Append(pictureContainer);
             }
             catch (SystemException ex)
             {
-               Console.Write(ex);
+                Console.Write(ex);
             }
         }
-
     }
-    
+
     private async Task SetExternalLinkContent(ViewExternal externalContent)
     {
-        if ( _embeddedContentFrame == null
+        if (_embeddedContentFrame == null
             && _embeddedContentThumbnail == null
             && _embeddedContentHeadline == null
             && _embeddedContentDescription == null
@@ -226,7 +213,7 @@ public class StatusItem : ListBoxRow
         {
             return;
         }
-        
+
         _embeddedContentFrame?.SetVisible(true);
 
         _embeddedContentHeadline?.SetLabel(externalContent.External.Title.Trim());
@@ -245,13 +232,20 @@ public class StatusItem : ListBoxRow
 
         if (!string.IsNullOrEmpty(externalContent.External.Thumb))
         {
-            _embeddedContentThumbnail?.SetVisible(true);
-
-            var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(externalContent.External.Thumb);
-
-            if (thumbnailBytes != null && _embeddedContentThumbnail != null)
+            try
             {
-                _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
+                _embeddedContentThumbnail?.SetVisible(true);
+
+                var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(externalContent.External.Thumb);
+
+                if (thumbnailBytes != null && _embeddedContentThumbnail != null)
+                {
+                    _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to handle thumbnail image of external content: {ThumbnailUrl}", externalContent.External.Thumb);
             }
         }
     }
@@ -276,10 +270,10 @@ public class StatusItem : ListBoxRow
             // Set the profile picture
             _profilePicture.CustomImage = Gdk.Texture.NewFromBytes(bytes);
         }
-        catch (System.Exception ex)
+        catch (Exception ex)
         {
-            // TODO: Get DI logger
-            Console.WriteLine("Failed to set profile picture: " + ex.Message);
+            _logger.LogError(ex, "Failure setting profile picture {ProfilePicture} on status (Url: {Url})",
+                _content.Cid, _content.Uri);
         }
     }
 

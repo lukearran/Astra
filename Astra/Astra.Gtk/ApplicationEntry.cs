@@ -11,21 +11,20 @@ namespace Astra.Gtk;
 public class ApplicationEntry
 {
     private readonly ILogger<ApplicationEntry> _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
     private readonly ICredentialProvider _credentialProvider;
-    
-    private string[] _args = [];
-    private Application _application;
+    private readonly Application _application;
     
     public ApplicationEntry(
-        ILogger<ApplicationEntry> logger,
+        ILoggerFactory loggerFactory,
         ISessionService sessionService,
         IUserFeedService userFeedService,
-        ICredentialProvider credentialProvider
-        )
+        ICredentialProvider credentialProvider)
     {
-        _logger = logger;
+        _loggerFactory = loggerFactory;
+        _logger = loggerFactory.CreateLogger<ApplicationEntry>();
         _sessionService = sessionService;
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
@@ -34,11 +33,11 @@ public class ApplicationEntry
         _application.OnActivate += OnActivate;
         _application.OnStartup += OnOnStartup;
         
-        // Register resources
-        if (File.Exists(Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)) + "/app.astra.gtk.gresource"))
+        var gResourcePath = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty) + "/app.astra.gtk.gresource";
+        
+        if (File.Exists(gResourcePath))
         {
-            //Load file from program directory, required for `dotnet run`
-            Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)) + "/app.astra.gtk.gresource"));
+            Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(gResourcePath));
         }
         else
         {
@@ -47,23 +46,16 @@ public class ApplicationEntry
                 Directory.GetParent(Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location))).FullName,
                 "/usr"
             };
-            foreach (var prefix in prefixes)
+
+            foreach (var prefix in prefixes.Where(prefix => File.Exists(prefix + "/share/app.astra.gtk/app.astra.gtk.gresource")))
             {
-                if (File.Exists(prefix + "/share/app.astra.gtk/app.astra.gtk.gresource"))
-                {
-                    Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(Path.GetFullPath(prefix + "/share/app.astra.gtk/app.astra.gtk.gresource")));
-                    break;
-                }
+                Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(Path.GetFullPath(prefix + "/share/app.astra.gtk/app.astra.gtk.gresource")));
+                break;
             }
         }
     }
     
-    public void Run(string[] args)
-    {
-        _args = args;
-
-        _application.RunWithSynchronizationContext(args);
-    }
+    public void Run(string[] args) => _application.RunWithSynchronizationContext(args);
 
     private void OnOnStartup(Gio.Application sender, EventArgs args)
     {
@@ -71,7 +63,8 @@ public class ApplicationEntry
             (Adw.Application)sender,
             _sessionService,
             _userFeedService,
-            _credentialProvider);
+            _credentialProvider,
+            _loggerFactory);
         
         window.Present();
     }
