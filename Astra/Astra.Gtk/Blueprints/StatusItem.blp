@@ -17,7 +17,7 @@ ListBoxRow _root {
     halign: start;
     valign: start;
 
-    Box {
+    Box avatar_container {
       orientation: vertical;
 
       Adw.Avatar profile_picture {
@@ -32,6 +32,11 @@ ListBoxRow _root {
 
       Box {
         orientation: horizontal;
+
+        Adw.Avatar profile_picture_mini {
+          size: 10;
+          show-initials: false;
+        }
 
         Label post_handle {
           margin-start: 5;
@@ -81,7 +86,7 @@ ListBoxRow _root {
         }
       }
 
-      Frame embedded_card {
+      Frame embedded_card_record_frame {
         visible: false;
         valign: center;
         hexpand: false;
@@ -95,7 +100,27 @@ ListBoxRow _root {
           "embedded_card",
         ]
 
-        Box {
+        Box embedded_record_def {
+          orientation: vertical;
+        }
+      }
+
+      Frame embedded_card_link_frame {
+        visible: false;
+        valign: center;
+        hexpand: false;
+        vexpand: true;
+        width-request: 500;
+        margin-top: 18;
+        margin-bottom: 18;
+        margin-end: 6;
+
+        styles [
+          "embedded_card",
+        ]
+
+        Box external_link_container {
+          visible: false;
           orientation: vertical;
 
           Picture embedded_card_thumbnail {
@@ -160,7 +185,7 @@ ListBoxRow _root {
         }
       }
 
-      Box {
+      Box action_bar {
         margin-start: 5;
         margin-top: 5;
         orientation: horizontal;

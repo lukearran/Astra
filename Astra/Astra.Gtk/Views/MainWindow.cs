@@ -1,5 +1,6 @@
 using Adw.Internal;
 using Astra.AtProtocol.Client.Interfaces;
+using Astra.AtProtocol.Common.Models.Views;
 using Astra.AtProtocol.Common.Providers;
 using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gtk;
@@ -79,6 +80,8 @@ public class MainWindow : Adw.ApplicationWindow
         var statusUpdates = timelineResult
             .Posts
             .Select(x => x.Post)
+            // TODO: Allow viewing of replies to posts
+            .Where(x => x.PostRecord?.Reply == null)
             .ToList();
 
         // Add status updates to the ListBox
@@ -87,7 +90,8 @@ public class MainWindow : Adw.ApplicationWindow
 
     private void AddStatusUpdates(List<PostView> statusUpdates, ref ListBox statusListBox)
     {
-        foreach (var row in statusUpdates.Select(status => new StatusItem(status, _loggerFactory)))
+        foreach (var row in statusUpdates.Select(status => 
+                     new StatusItem(new StatusItemView(status), _loggerFactory)))
         {
             statusListBox.Append(row);
         }

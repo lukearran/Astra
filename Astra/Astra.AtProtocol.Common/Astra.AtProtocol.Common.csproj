@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Reference Include="FishyFlip">
+        <HintPath>..\..\..\..\.nuget\packages\fishyflip\3.4.1\lib\net8.0\FishyFlip.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
 </Project>

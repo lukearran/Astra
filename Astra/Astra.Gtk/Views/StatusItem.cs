@@ -1,12 +1,13 @@
+using Astra.AtProtocol.Common.Models.Views;
 using Astra.Gtk.Extensions;
 using Astra.Gtk.Functions;
 using Astra.Gtk.Helpers;
 using FishyFlip.Lexicon.App.Bsky.Embed;
-using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gdk;
 using Gtk;
 using Gtk.Internal;
 using Microsoft.Extensions.Logging;
+using Box = Gtk.Box;
 using Builder = Gtk.Builder;
 using Button = Gtk.Button;
 using Frame = Gtk.Frame;
@@ -21,67 +22,95 @@ namespace Astra.Gtk.Views;
 public class StatusItem : ListBoxRow
 {
     // Logger
+    private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<StatusItem> _logger;
 
     // Content model
-    private readonly PostView _content;
+    private readonly StatusItemView _content;
+    
+    // Avatar
+    [Connect("avatar_container")]
+    private readonly Box? _avatarContainer = null;
+    
+    [Connect("profile_picture")]
+    private readonly Adw.Avatar? _profilePicture = null;
+    
+    [Connect("profile_picture_mini")]
+    private readonly Adw.Avatar? _profilePictureMini = null;
 
     // Posted By, Handles, and Posted At
-    [global::Gtk.Connect("post_handle")] private readonly global::Gtk.Label? _postHandle = null;
+    [Connect("post_handle")]
+    private readonly global::Gtk.Label? _postHandle = null;
 
-    [global::Gtk.Connect("post_handle_sub")]
+    [Connect("post_handle_sub")]
     private readonly global::Gtk.Label? _postHandleSub = null;
 
-    [global::Gtk.Connect("profile_picture")]
-    private readonly Adw.Avatar? _profilePicture = null;
-
     // Content of the post
-    [global::Gtk.Connect("post_content")] private readonly global::Gtk.Label? _postContent = null;
+    [Connect("post_content")]
+    private readonly global::Gtk.Label? _postContent = null;
+    
+    // Embedded external content
+    [Connect("embedded_card_link_frame")]
+    private readonly Frame? _embeddedContentFrame = null;
 
-    // Buttons
-    [global::Gtk.Connect("reply_button")] private readonly Button? _replyButton = null;
+    [Connect("external_link_container")]
+    private readonly Box? _externalLinkContainer = null;
 
-    [global::Gtk.Connect("reply_button_content")]
-    private readonly Adw.ButtonContent? _replyButtonContent = null;
+    [Connect("embedded_card_thumbnail")]
+    private readonly Picture? _embeddedContentThumbnail = null;
 
-    [global::Gtk.Connect("repost_button")] private readonly ToggleButton? _repostButton = null;
-
-    [global::Gtk.Connect("repost_button_content")]
-    private readonly Adw.ButtonContent? _repostButtonContent = null;
-
-    [global::Gtk.Connect("heart_button")] private readonly ToggleButton? _heartButton = null;
-
-    [global::Gtk.Connect("heart_button_content")]
-    private readonly Adw.ButtonContent? _heartButtonContent = null;
-
-    // Embedded external link content
-    [global::Gtk.Connect("embedded_card")] private readonly global::Gtk.Frame? _embeddedContentFrame = null;
-
-    [global::Gtk.Connect("embedded_card_thumbnail")]
-    private readonly global::Gtk.Picture? _embeddedContentThumbnail = null;
-
-    [global::Gtk.Connect("embedded_card_headline")]
+    [Connect("embedded_card_headline")]
     private readonly global::Gtk.Label? _embeddedContentHeadline = null;
 
-    [global::Gtk.Connect("embedded_card_description")]
+    [Connect("embedded_card_description")]
     private readonly global::Gtk.Label? _embeddedContentDescription = null;
 
-    [global::Gtk.Connect("embedded_card_link")]
+    [Connect("embedded_card_link")]
     private readonly global::Gtk.Label? _embeddedContentLink = null;
 
     // Embedded photo content
-    [global::Gtk.Connect("picture_container_box")]
-    private readonly global::Gtk.Box? _pictureContainerBox = null;
+    [Connect("picture_container_box")]
+    private readonly Box? _pictureContainerBox = null;
 
-    [global::Gtk.Connect("picture_flowbox")]
+    [Connect("picture_flowbox")]
     private readonly global::Gtk.ScrolledWindow? _pictureScrollWindowContainer = null;
+    
+    // Embedded record
+    [Connect("embedded_card_record_frame")]
+    private readonly Frame? _embeddedContentRecordFrame = null;
+    
+    [Connect("embedded_record_def")]
+    private readonly Box? _embeddedRecordDefContainer = null;
+    
+    // Action bar
+    [Connect("action_bar")]
+    private readonly Box? _actionBar = null;
+    
+    [Connect("reply_button")]
+    private readonly Button? _replyButton = null;
 
-    private StatusItem(ILoggerFactory loggerFactory, Builder builder, PostView content) : base(new ListBoxRowHandle(
+    [Connect("reply_button_content")]
+    private readonly Adw.ButtonContent? _replyButtonContent = null;
+
+    [Connect("repost_button")]
+    private readonly ToggleButton? _repostButton = null;
+
+    [Connect("repost_button_content")]
+    private readonly Adw.ButtonContent? _repostButtonContent = null;
+
+    [Connect("heart_button")]
+    private readonly ToggleButton? _heartButton = null;
+
+    [Connect("heart_button_content")]
+    private readonly Adw.ButtonContent? _heartButtonContent = null;
+
+    private StatusItem(ILoggerFactory loggerFactory, Builder builder, StatusItemView content) : base(new ListBoxRowHandle(
         builder.GetPointer("_root"),
         false))
     {
         builder.Connect(this);
 
+        _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<StatusItem>();
 
         _logger.LogDebug("Creating StatusItem Widget for Post: {Post}", content.Uri);
@@ -89,17 +118,23 @@ public class StatusItem : ListBoxRow
         _content = content;
 
         // Set the handle label
-        _postHandle?.SetVisible(string.IsNullOrEmpty(content.Author.DisplayName) is false);
-        _postHandle?.SetText(content.Author.DisplayName ?? string.Empty);
+        _postHandle?.SetVisible(string.IsNullOrEmpty(content.AuthorDisplayName) is false);
+        _postHandle?.SetText(content.AuthorDisplayName);
 
         // Set the handle sub-content
         var subContent = GetSubHandle(content);
         _postHandleSub?.SetText(subContent);
 
         // Set markdown content
-        _postContent?.SetVisible(!string.IsNullOrEmpty(content.PostRecord?.Text));
-        _postContent?.SetText(content.PostRecord?.Text ?? string.Empty);
-
+        _postContent?.SetVisible(!string.IsNullOrEmpty(content.StatusText));
+        _postContent?.SetText(content.StatusText);
+        
+        // Hide elements if not a post
+        _actionBar?.SetVisible(content.ItemType != StatusItemType.QuotedPost);
+        _avatarContainer?.SetVisible(content.ItemType != StatusItemType.QuotedPost);
+        _profilePicture?.SetVisible(content.ItemType == StatusItemType.Post);
+        _profilePictureMini?.SetVisible(content.ItemType == StatusItemType.QuotedPost);
+        
         // Register "Reply" button click event
         _replyButtonContent?.SetLabel(content.ReplyCount.ToString() ?? "0");
         if (_replyButton != null)
@@ -122,40 +157,66 @@ public class StatusItem : ListBoxRow
         }
 
         // Fire and forget setting the profile picture
-        if (!string.IsNullOrEmpty(content.Author.Avatar))
+        if (!string.IsNullOrEmpty(content.ProfilePictureUrl))
         {
-            _ = TrySetProfilePicture(content.Author.Avatar);
+            _ = TrySetProfilePicture(content.ProfilePictureUrl);
         }
 
         // Fire and forget setting the embedded content
-        if (content.PostRecord?.Embed != null)
+        if (content.EmbeddedContent != null)
         {
             _ = SetEmbeddedContent(content);
         }
     }
 
-    public StatusItem(PostView content, ILoggerFactory loggerFactory)
+    public StatusItem(StatusItemView content, ILoggerFactory loggerFactory)
         : this(loggerFactory, new Builder("StatusItem.ui"), content)
     {
     }
 
-    private Task SetEmbeddedContent(PostView content)
+    private Task SetEmbeddedContent(StatusItemView content)
     {
         // Ignore, if there is no embed content
-        if (content.PostRecord?.Embed == null)
+        if (content.EmbeddedContent == null)
         {
             return Task.CompletedTask;
         }
 
-        _ = content.Embed switch
+        _ = content.EmbeddedContent switch
         {
             ViewExternal externalLink => SetExternalLinkContent(externalLink),
             ViewImages images => SetExternalImagesContent(images),
             ViewImage image => SetExternalImagesContent(new ViewImages() { Images = [image] }),
+            ViewRecordDef record => SetEmbeddedStatus(record),
             // TODO: Video
-            // TODO: Embedded sub-status (quote)
             _ => Task.CompletedTask
         };
+
+        return Task.CompletedTask;
+    }
+
+    private Task SetEmbeddedStatus(ViewRecordDef record)
+    {
+        if (_embeddedContentRecordFrame == null || 
+            _embeddedRecordDefContainer == null ||
+            _externalLinkContainer == null)
+        {
+            return Task.CompletedTask;
+        }
+
+        if (record.Record is ViewRecord viewRecord)
+        {
+            // Make the containers visible
+            _embeddedContentRecordFrame.SetVisible(true);
+            _embeddedRecordDefContainer.SetVisible(true);
+
+            var newRecordItem = new StatusItem(
+                new StatusItemView(viewRecord),
+                _loggerFactory);
+
+            _embeddedRecordDefContainer.Append(newRecordItem);
+        }
+
         return Task.CompletedTask;
     }
 
@@ -209,12 +270,14 @@ public class StatusItem : ListBoxRow
             && _embeddedContentThumbnail == null
             && _embeddedContentHeadline == null
             && _embeddedContentDescription == null
-            && _embeddedContentLink == null)
+            && _embeddedContentLink == null
+            && _embeddedContentFrame == null)
         {
             return;
         }
 
         _embeddedContentFrame?.SetVisible(true);
+        _externalLinkContainer?.SetVisible(true);
 
         _embeddedContentHeadline?.SetLabel(externalContent.External.Title.Trim());
 
@@ -240,7 +303,7 @@ public class StatusItem : ListBoxRow
 
                 if (thumbnailBytes != null && _embeddedContentThumbnail != null)
                 {
-                    _embeddedContentThumbnail.Paintable = Gdk.Texture.NewFromBytes(thumbnailBytes);
+                    _embeddedContentThumbnail.Paintable = Texture.NewFromBytes(thumbnailBytes);
                 }
             }
             catch (Exception ex)
@@ -254,12 +317,6 @@ public class StatusItem : ListBoxRow
     {
         try
         {
-            if (_profilePicture == null)
-            {
-                return;
-            }
-
-            // Get the bytes
             var bytes = await NetworkFunction.GetDataInBytesAsync(profilePictureUrl);
 
             if (bytes == null)
@@ -268,42 +325,51 @@ public class StatusItem : ListBoxRow
             }
 
             // Set the profile picture
-            _profilePicture.CustomImage = Gdk.Texture.NewFromBytes(bytes);
+            var texture = Texture.NewFromBytes(bytes);
+            
+            if (_profilePicture != null)
+            {
+                _profilePicture.CustomImage = texture;
+            }
+
+            if (_profilePictureMini != null)
+            {
+                _profilePictureMini.CustomImage = texture;
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failure setting profile picture {ProfilePicture} on status (Url: {Url})",
-                _content.Cid, _content.Uri);
+            _logger.LogError(ex, "Failure setting profile picture on status item: {Url}", _content.Uri);
         }
-    }
-
-    private string GetSubHandle(PostView content)
-    {
-        // Get the profile handle
-        var handle = content.Author.Handle.Handle;
-
-        // Get the created time
-        var createdAt = content.PostRecord?.CreatedAt;
-
-        return createdAt != null ? $"{handle} · {createdAt.Value.ToRelativeDate()}" : handle;
-    }
-
-    private void HeartButtonOnToggled(ToggleButton sender, EventArgs args)
-    {
-        SetToggleButtonStyle(sender, "post_love_button_toggled");
-    }
-
-    private void RepostButtonOnToggled(ToggleButton sender, EventArgs args)
-    {
-        SetToggleButtonStyle(sender, "post_repost_button_toggled");
     }
 
     private void ReplyButtonOnClicked(Button sender, EventArgs args)
     {
         throw new NotImplementedException();
     }
+    
+    private static string GetSubHandle(StatusItemView content)
+    {
+        // Get the profile handle
+        var handle = content.UserHandle;
 
-    private void SetToggleButtonStyle(ToggleButton sender, string styleClass)
+        // Get the created time
+        var createdAt = content.PublishedAt;
+
+        return createdAt != null ? $"{handle} · {createdAt.Value.ToRelativeDate()}" : handle;
+    }
+    
+    private static void HeartButtonOnToggled(ToggleButton sender, EventArgs args)
+    {
+        SetToggleButtonStyle(sender, "post_love_button_toggled");
+    }
+
+    private static void RepostButtonOnToggled(ToggleButton sender, EventArgs args)
+    {
+        SetToggleButtonStyle(sender, "post_repost_button_toggled");
+    }
+
+    private static void SetToggleButtonStyle(ToggleButton sender, string styleClass)
     {
         if (sender.Active)
         {
