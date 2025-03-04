@@ -1,0 +1,33 @@
+using Gtk 4.0;
+using Adw 1;
+
+Gtk.Box _root {
+    Gtk.Box feed_spinner {
+        hexpand: true;
+        vexpand: true;
+        visible: true;
+        halign: center;
+        valign: center;
+
+        Gtk.Spinner {
+            width-request: 75;
+            height-request: 75;
+            spinning: true;
+        }
+    }
+
+    Gtk.ScrolledWindow feed_scroll {
+        hexpand: true;
+        vexpand: true;
+        visible: false;
+        hscrollbar-policy: never;
+
+        child: Gtk.ListBox status_list_box {
+            hexpand: false;
+            vexpand: true;
+            width-request: 300;
+            selection-mode: none;
+            show-separators: true;
+        };
+    }
+}

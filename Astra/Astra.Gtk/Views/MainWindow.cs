@@ -10,6 +10,9 @@ namespace Astra.Gtk.Views;
 
 public class MainWindow : Adw.ApplicationWindow
 {
+    [Connect("home_page_container")]
+    private readonly Box? _homeStackContainer = null;
+    
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
     private readonly ICredentialProvider _credentialProvider;
@@ -33,8 +36,13 @@ public class MainWindow : Adw.ApplicationWindow
         _builder = builder;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<MainWindow>();
-
-        _ = InitializeAt();
+        
+        // Set the panel
+        _homeStackContainer?.Append(new Feed(
+            _sessionService,
+            _userFeedService,
+            _credentialProvider,
+            _loggerFactory));
     }
 
     public MainWindow(
@@ -52,48 +60,5 @@ public class MainWindow : Adw.ApplicationWindow
             "main_window")
     {
         this.Application = application;
-    }
-    
-    private async Task InitializeAt()
-    {
-        ArgumentNullException.ThrowIfNull(_credentialProvider.Username);
-        ArgumentNullException.ThrowIfNull(_credentialProvider.Password);
-        
-        // TODO The following initialising process is just placeholder until later replaced with an async solution
-        var loginSessionResult = await _sessionService.LoginWithPassword(
-            identifier: _credentialProvider.Username,
-            password: _credentialProvider.Password,
-            CancellationToken.None
-        );
-
-        var timelineResult = await _userFeedService.GetUserTimeline(limit: 50, CancellationToken.None);
-
-        // Initialize the ListBox
-        var listBoxObj = _builder.GetObject("status_list_box");
-
-        if (listBoxObj is not ListBox box)
-        {
-            throw new Exception("status_list_box not found on window");
-        }
-            
-        // Example list of status updates
-        var statusUpdates = timelineResult
-            .Posts
-            .Select(x => x.Post)
-            // TODO: Allow viewing of replies to posts
-            .Where(x => x.PostRecord?.Reply == null)
-            .ToList();
-
-        // Add status updates to the ListBox
-        AddStatusUpdates(statusUpdates, ref box);
-    }
-
-    private void AddStatusUpdates(List<PostView> statusUpdates, ref ListBox statusListBox)
-    {
-        foreach (var row in statusUpdates.Select(status => 
-                     new StatusItem(new StatusItemView(status), _loggerFactory)))
-        {
-            statusListBox.Append(row);
-        }
     }
 }
