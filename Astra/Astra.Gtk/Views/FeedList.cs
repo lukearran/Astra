@@ -14,12 +14,12 @@ namespace Astra.Gtk.Views;
 
 public class Feed : Box
 {
-    [Connect("feed_spinner")]
-    private readonly Box? _feedSpinner = null;
-    
-    [Connect("feed_scroll")]
-    private readonly ScrolledWindow? _feedScroll = null;
-    
+    [Connect("status_list_box")] private readonly ListBox? _feedListBox = null;
+
+    [Connect("feed_spinner")] private readonly Box? _feedSpinner = null;
+
+    [Connect("feed_scroll")] private readonly ScrolledWindow? _feedScroll = null;
+
     // Services
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
@@ -27,17 +27,20 @@ public class Feed : Box
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<Feed> _logger;
     private readonly Builder _builder;
-    
+
+    // Last cursor
+    private string _lastCursor = string.Empty;
+
     private Feed(
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
         ILoggerFactory loggerFactory,
-        Builder builder) : 
+        Builder builder) :
         base(new BoxHandle(builder.GetPointer("_root"), false))
     {
         builder.Connect(this);
-        
+
         _logger = loggerFactory.CreateLogger<Feed>();
         _sessionService = sessionService;
         _userFeedService = userFeedService;
@@ -45,12 +48,9 @@ public class Feed : Box
         _builder = builder;
         _loggerFactory = loggerFactory;
 
-        Task.Run(() =>
-        {
-            _ = InitializeAt(builder);
-        });
+        _ = InitializeAt(builder);
     }
-    
+
     public Feed(
         ISessionService sessionService,
         IUserFeedService userFeedService,
@@ -64,49 +64,64 @@ public class Feed : Box
             new Builder("Feed.ui"))
     {
     }
-    
+
     private async Task InitializeAt(Builder builder)
     {
         ArgumentNullException.ThrowIfNull(_credentialProvider.Username);
         ArgumentNullException.ThrowIfNull(_credentialProvider.Password);
-        
+
+        // TODO: Move the login logic out of the feed widget. It should be handled earlier.
         await _sessionService.LoginWithPassword(
             identifier: _credentialProvider.Username,
             password: _credentialProvider.Password,
             CancellationToken.None
         );
 
-        var timelineResult = await _userFeedService.GetUserTimeline(limit: 20, CancellationToken.None);
+        await FetchPosts();
 
-        // Initialize the ListBox
-        var listBoxObj = builder.GetObject("status_list_box");
+        var scrollAdjustment = _feedScroll?.Vadjustment;
 
-        if (listBoxObj is not ListBox box)
+        if (scrollAdjustment != null)
         {
-            throw new Exception("status_list_box not found on window");
+            scrollAdjustment.OnValueChanged += async (sender, args) =>
+            {
+                if (!string.IsNullOrEmpty(_lastCursor) &&
+                    sender.Value >= sender.Upper - sender.PageSize)
+                {
+                    _logger.LogDebug("Hit end of scroll, fetch more posts...");
+                    await FetchPosts(_lastCursor);
+                }
+            };
         }
-            
-        // Example list of status updates
-        var statusUpdates = timelineResult
-            .Posts
-            .Select(x => x.Post)
-            // TODO: Allow viewing of replies to posts
-            .Where(x => x.PostRecord?.Reply == null)
-            .ToList();
-
-        // Add status updates to the ListBox
-        AddStatusUpdates(statusUpdates, ref box);
-        
-        _feedSpinner?.SetVisible(false);
-        _feedScroll?.SetVisible(true);
     }
-    
-    private void AddStatusUpdates(List<PostView> statusUpdates, ref ListBox statusListBox)
+
+    private async Task FetchPosts(string? cursor = null)
     {
-        foreach (var row in statusUpdates.Select(status => 
-                     new StatusItem(new StatusItemView(status), _loggerFactory)))
+        await Task.Run(async () =>
         {
-            statusListBox.Append(row);
-        }
+            var timelineResult = await _userFeedService.GetUserTimeline(
+                limit: 20,
+                cursor: cursor,
+                token: CancellationToken.None);
+
+            _lastCursor = timelineResult.Cursor ?? string.Empty;
+
+            var statusUpdates = timelineResult
+                .Posts
+                .Select(x => x.Post)
+                .ToList();
+
+            var statusItems = statusUpdates
+                .Select(status => new StatusItem(new StatusItemView(status), _loggerFactory))
+                .ToArray();
+
+            foreach (var statusItem in statusItems)
+            {
+                _feedListBox?.Append(statusItem);
+            }
+
+            _feedSpinner?.SetVisible(false);
+            _feedScroll?.SetVisible(true);
+        });
     }
 }

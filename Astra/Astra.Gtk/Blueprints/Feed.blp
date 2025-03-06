@@ -2,6 +2,12 @@ using Gtk 4.0;
 using Adw 1;
 
 Gtk.Box _root {
+    orientation: vertical;
+
+    Adw.Banner banner {
+        revealed: false;
+    }
+
     Gtk.Box feed_spinner {
         hexpand: true;
         vexpand: true;

@@ -7,11 +7,12 @@ namespace Astra.AtProtocol.Client.Services;
 
 public class UserFeedService(ATProtocol protocol) : BaseService(protocol), IUserFeedService
 {
-    public async Task<TimelineResult> GetUserTimeline(int limit, CancellationToken token)
+    public async Task<TimelineResult> GetUserTimeline(int limit, CancellationToken token, string? cursor = null)
     {
         var (timelineOutputResult, error) = await Protocol.GetTimelineAsync(
             limit: limit,
-            cancellationToken: token);
+            cancellationToken: token,
+            cursor: cursor);
         
         if (timelineOutputResult is null)
         {
@@ -23,6 +24,7 @@ public class UserFeedService(ATProtocol protocol) : BaseService(protocol), IUser
         return new TimelineResult(
             success: true,
             message: $"Successfully retrieved timeline - total {timelineOutputResult.Feed?.Count}",
-            posts: timelineOutputResult.Feed);
+            posts: timelineOutputResult.Feed,
+            cursor: timelineOutputResult.Cursor);
     }
 }
