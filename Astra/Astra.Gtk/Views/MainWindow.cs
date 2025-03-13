@@ -1,8 +1,6 @@
 using Adw.Internal;
 using Astra.AtProtocol.Client.Interfaces;
-using Astra.AtProtocol.Common.Models.Views;
-using Astra.AtProtocol.Common.Providers;
-using FishyFlip.Lexicon.App.Bsky.Feed;
+using Astra.AtProtocol.Common.Interfaces;
 using Gtk;
 using Microsoft.Extensions.Logging;
 

@@ -8,5 +8,6 @@
         <file preprocess="xml-stripblanks">chat-bubble-empty-symbolic.svg</file>
         <file preprocess="xml-stripblanks">heart-outline-thick-symbolic.svg</file>
         <file preprocess="xml-stripblanks">menu-large-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">cloud-filled-symbolic.svg</file>
     </gresource>
 </gresources>

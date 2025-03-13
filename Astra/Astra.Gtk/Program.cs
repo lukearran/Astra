@@ -2,7 +2,8 @@
 using System.Reflection;
 using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Client.Services;
-using Astra.AtProtocol.Common.Providers;
+using Astra.AtProtocol.Common.Interfaces;
+using Astra.AtProtocol.Common.Providers.Credentials;
 using Astra.Gtk;
 using FishyFlip;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,9 +31,7 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton(atProtocol)
     .AddSingleton<ISessionService, SessionService>()
     .AddSingleton<IUserFeedService, UserFeedService>()
-    .AddSingleton<ICredentialProvider, CredentialProvider>((x) => new CredentialProvider(
-        defaultUsername: Environment.GetEnvironmentVariable("at_username"),
-        defaultPassword: Environment.GetEnvironmentVariable("at_password")))
+    .AddSingleton<ICredentialProvider, LocalMemoryCredentialProvider>((x) => new LocalMemoryCredentialProvider())
     .AddSingleton<ApplicationEntry>()
     .BuildServiceProvider();
     

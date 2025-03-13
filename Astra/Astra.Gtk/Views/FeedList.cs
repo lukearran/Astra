@@ -1,7 +1,6 @@
 using Astra.AtProtocol.Client.Interfaces;
+using Astra.AtProtocol.Common.Interfaces;
 using Astra.AtProtocol.Common.Models.Views;
-using Astra.AtProtocol.Common.Providers;
-using FishyFlip.Lexicon.App.Bsky.Feed;
 using Gtk;
 using Gtk.Internal;
 using Microsoft.Extensions.Logging;
@@ -67,13 +66,14 @@ public class Feed : Box
 
     private async Task InitializeAt(Builder builder)
     {
-        ArgumentNullException.ThrowIfNull(_credentialProvider.Username);
-        ArgumentNullException.ThrowIfNull(_credentialProvider.Password);
+        var credential = _credentialProvider.GetCredential();
+        
+        ArgumentNullException.ThrowIfNull(credential);
 
         // TODO: Move the login logic out of the feed widget. It should be handled earlier.
         await _sessionService.LoginWithPassword(
-            identifier: _credentialProvider.Username,
-            password: _credentialProvider.Password,
+            identifier: credential.Username,
+            password: credential.Password,
             CancellationToken.None
         );
 

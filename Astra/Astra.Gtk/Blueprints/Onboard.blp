@@ -1,0 +1,123 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window _root {
+    width-request: 360;
+    height-request: 640;
+    default-width: 640;
+    default-height: 640;
+    resizable: false;
+
+    Adw.ToolbarView toolbar_view {
+        extend-content-to-bottom-edge: true;
+        extend-content-to-top-edge: true;
+        top-bar-style: flat;
+        reveal-bottom-bars: false;
+
+        [top]
+        Adw.HeaderBar header_bar {
+            show-title: false;
+        }
+
+        [bottom]
+        ActionBar action_bar {
+            revealed: true;
+            valign: end;
+
+            [start]
+            Button start_widget {
+                icon-name: "call-start-symbolic";
+            }
+
+            [center]
+            Label {
+                label: _("Action Bar");
+            }
+
+            [end]
+            Button end_widget {
+                icon-name: "view-more-symbolic";
+            }
+        }
+
+        content: Adw.ToastOverlay toast_overlay {
+            Adw.StatusPage {
+                icon-name: "cloud-filled-symbolic";
+
+                Box {
+                    halign: center;
+                    orientation: vertical;
+                    spacing: 18;
+
+                    Label {
+                        label: _("Welcome to Astra");
+
+                        styles [
+                            "title-1",
+                        ]
+                    }
+
+                    Label {
+                        wrap: true;
+                        label: _("To get started, enter your username and password");
+                    }
+
+                    ListBox {
+                        selection-mode: none;
+
+                        styles [
+                            "boxed-list",
+                        ]
+
+                        Adw.EntryRow username_entry {
+                            title: "Username";
+                            show-apply-button: false;
+
+                            styles [
+                                "invalid"
+                            ]
+                        }
+
+                        Adw.PasswordEntryRow password_entry {
+                            title: "Password";
+                            show-apply-button: false;
+                        }
+                    }
+
+                    LinkButton {
+                        label: _("More information on app passwords");
+                        uri: "https://bsky.app/settings/app-passwords";
+                    }
+
+                    Button sign_in_button {
+                        halign: center;
+                        name: "sign-in";
+                        icon-name: "call-start-symbolic";
+                        label: _("Sign into Bluesky");
+
+                        styles [
+                            "pill",
+                            "suggested-action",
+                        ]
+
+                        child: Box {
+                            orientation: horizontal;
+
+                            Gtk.Spinner sign_in_button_spinner {
+                                visible: false;
+                                width-request: 10;
+                                height-request: 10;
+                                spinning: true;
+                                margin-end: 10;
+                            }
+
+                            Label {
+                                label: _("Sign in");
+                            }
+                        };
+                    }
+                }
+            }
+        };
+    }
+}
