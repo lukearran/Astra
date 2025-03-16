@@ -9,7 +9,7 @@
 </p>
 
 > [!WARNING]  
-> This app is still early in development and is **not** ready for daily use.
+> This project is still early in development and is **not** ready for daily use.
 
 ## 🛣️ Roadmap
 
@@ -19,7 +19,7 @@
 - [ ] Timeline
     - [X] Avatar
     - [X] Text
-    - [X] Image
+    - [ ] Image
         - [X] One image
         - [X] Group of images
         - [ ] Full screen image viewer
@@ -31,13 +31,13 @@
         - [ ] Submit repost
     - [ ] Quote post
     - [ ] View Replies
-    - [X] Continuous Load
     - [ ] Change feeds/algorithms
     - [ ] Create a post
     - [ ] Responsive layout
     - [ ] Searching
     - [ ] Notifications
     - [ ] Messages
+    - [ ] Translations
 
 ## 🛠️ Building from source
 
