@@ -13,10 +13,9 @@
 
 ## 🛣️ Roadmap
 
-- [ ] Login
-    - [ ] Credential storage
-    - [ ] Change provider
-- [ ] Timeline
+- Login
+    - [X] Credential storage
+- Timeline
     - [X] Avatar
     - [X] Text
     - [ ] Image
@@ -38,6 +37,10 @@
     - [ ] Notifications
     - [ ] Messages
     - [ ] Translations
+- Other
+  - [ ] Change provider
+
+See open issues for further detail.
 
 ## 🛠️ Building from source
 
@@ -72,6 +75,8 @@ This project is licensed under the `MIT` license. See the `LICENSE.md` file for 
 ## 😇 Acknowledgements
 
 Astra uses the following libraries:
+
 - [FishyFlip](https://github.com/drasticactions/FishyFlip)
 - [Gir.Core](https://github.com/gircore/)
 - [Blueprint](https://jwestman.pages.gitlab.gnome.org/blueprint-compiler/)
+- [DBus.Services.Secrets](https://github.com/Ace4896/DBus.Services.Secrets)

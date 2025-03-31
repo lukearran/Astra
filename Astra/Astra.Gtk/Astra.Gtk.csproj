@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Astra.AtProtocol.Client\Astra.AtProtocol.Client.csproj" />
       <ProjectReference Include="..\Astra.AtProtocol.Common\Astra.AtProtocol.Common.csproj" />
+      <ProjectReference Include="..\Astra.Provider.Credentials.DBusSecretService\Astra.Provider.Credentials.DBusSecretService.csproj" />
     </ItemGroup>
 
     <ItemGroup>

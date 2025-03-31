@@ -3,8 +3,8 @@ using System.Reflection;
 using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Client.Services;
 using Astra.AtProtocol.Common.Interfaces;
-using Astra.AtProtocol.Common.Providers.Credentials;
 using Astra.Gtk;
+using Astra.Provider.Credentials.DBusSecretService;
 using FishyFlip;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,7 +31,7 @@ var serviceProvider = new ServiceCollection()
     .AddSingleton(atProtocol)
     .AddSingleton<ISessionService, SessionService>()
     .AddSingleton<IUserFeedService, UserFeedService>()
-    .AddSingleton<ICredentialProvider, LocalMemoryCredentialProvider>((x) => new LocalMemoryCredentialProvider())
+    .AddSingleton<ICredentialProvider, SecretServiceProvider>()
     .AddSingleton<ApplicationEntry>()
     .BuildServiceProvider();
     

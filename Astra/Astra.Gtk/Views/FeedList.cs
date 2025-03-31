@@ -66,17 +66,6 @@ public class Feed : Box
 
     private async Task InitializeAt(Builder builder)
     {
-        var credential = _credentialProvider.GetCredential();
-        
-        ArgumentNullException.ThrowIfNull(credential);
-
-        // TODO: Move the login logic out of the feed widget. It should be handled earlier.
-        await _sessionService.LoginWithPassword(
-            identifier: credential.Username,
-            password: credential.Password,
-            CancellationToken.None
-        );
-
         await FetchPosts();
 
         var scrollAdjustment = _feedScroll?.Vadjustment;
