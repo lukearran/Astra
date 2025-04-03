@@ -1,10 +1,14 @@
 using System.Reflection;
 using Astra.AtProtocol.Client.Interfaces;
+using Astra.AtProtocol.Client.Models;
 using Astra.AtProtocol.Common.Interfaces;
+using Astra.AtProtocol.Common.Models.Credentials;
 using Astra.Gtk.Views;
 using Gio;
 using Microsoft.Extensions.Logging;
+using Application = Gio.Application;
 using File = System.IO.File;
+using Task = System.Threading.Tasks.Task;
 
 namespace Astra.Gtk;
 
@@ -38,44 +42,92 @@ public class ApplicationEntry
 
     public void Run(string[] args) => _application.RunWithSynchronizationContext(args);
 
-    private void OnStartup(Gio.Application sender, EventArgs args) => StartupHook(sender);
-    
+    private void OnStartup(Gio.Application sender, EventArgs args) => _ = StartupHook(sender);
+
     private void OnActivate(Application sender, EventArgs args)
     {
-       
     }
 
-    private void StartupHook(Gio.Application sender)
+    private async Task<bool> IsCredentialsValid()
     {
-        // If no credentials exist, go through on-boarding
-        if (_credentialProvider.GetCredential() is null)
-        {
-            var onboardWindow = new OnboardWindow(
-                (Adw.Application)_application,
-                _sessionService,
-                _credentialProvider,
-                _loggerFactory);
+        AtCredential? credentialsResult = null;
+        AtSessionResult? sessionResult = null;
 
-            onboardWindow.OnSuccess += (o, args) => ShowMainWindow();
-            
-            onboardWindow.Show();
-        }
-        // Otherwise, go straight to main window
-        else
+        try
         {
-            ShowMainWindow();
+            _application.Hold();
+            
+            credentialsResult = await _credentialProvider.GetCredential();
+
+            if (credentialsResult is not null)
+            {
+                var cancelTokenSource = new CancellationTokenSource();
+
+                cancelTokenSource.CancelAfter(TimeSpan.FromSeconds(5));
+
+                sessionResult = await _sessionService.LoginWithPassword(
+                    credentialsResult.Username,
+                    credentialsResult.Password,
+                    cancelTokenSource.Token);
+
+                _logger.LogInformation(
+                    "Credentials existed via Secret Service. Is Valid: {IsValid}",
+                    sessionResult.Success);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while validating credentials");
+        }
+        finally
+        {
+            _application.Release();
+        }
+
+        return credentialsResult != null && (sessionResult?.Success ?? false);
+    }
+
+    private async Task StartupHook(Gio.Application sender)
+    {
+        try
+        {
+            var isCredentialsValid = await IsCredentialsValid();
+
+            if (!isCredentialsValid)
+            {
+                var onboardWindow = new OnboardWindow(
+                    (Adw.Application)_application,
+                    _sessionService,
+                    _credentialProvider,
+                    _loggerFactory);
+
+                onboardWindow.OnSuccess += (o, args) => ShowMainWindow();
+                onboardWindow.Show();
+            }
+            else
+            {
+                ShowMainWindow();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            _logger.LogError(ex, "Error while starting up");
+            
+            // TODO: Notify user of error
         }
     }
 
     private void ShowMainWindow()
     {
+        _application.Release();
+
         var mainWindow = new MainWindow(
             (Adw.Application)_application,
             _sessionService,
             _userFeedService,
             _credentialProvider,
             _loggerFactory);
-        
+
         mainWindow.Show();
     }
 

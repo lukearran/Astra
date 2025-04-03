@@ -8,15 +8,15 @@ public class LocalMemoryCredentialProvider : ICredentialProvider
 {
     private AtCredential? _credential;
     
-    public AtCredential? GetCredential()
+    public Task<AtCredential?> GetCredential()
     {
-        return _credential;
+        return Task.FromResult(_credential);
     }
 
-    public bool SetCredential(AtCredential credential)
+    public Task<bool> SetCredential(AtCredential credential)
     {
         _credential = credential;
 
-        return true;
+        return Task.FromResult(true);
     }
 }

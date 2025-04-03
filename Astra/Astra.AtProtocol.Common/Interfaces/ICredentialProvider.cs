@@ -4,7 +4,7 @@ namespace Astra.AtProtocol.Common.Interfaces;
 
 public interface ICredentialProvider
 {
-    public AtCredential? GetCredential();
+    public Task<AtCredential?> GetCredential();
     
-    public bool SetCredential(AtCredential credential);
+    public Task<bool> SetCredential(AtCredential credential);
 }

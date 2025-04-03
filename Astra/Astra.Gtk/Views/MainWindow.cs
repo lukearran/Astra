@@ -10,11 +10,7 @@ public class MainWindow : Adw.ApplicationWindow
 {
     [Connect("home_page_container")]
     private readonly Box? _homeStackContainer = null;
-    
-    private readonly ISessionService _sessionService;
-    private readonly IUserFeedService _userFeedService;
-    private readonly ICredentialProvider _credentialProvider;
-    private readonly ILoggerFactory _loggerFactory;
+
     private readonly ILogger<MainWindow> _logger;
     private readonly Builder _builder;
 
@@ -28,19 +24,16 @@ public class MainWindow : Adw.ApplicationWindow
     {
         builder.Connect(this);
 
-        _sessionService = sessionService;
-        _userFeedService = userFeedService;
-        _credentialProvider = credentialProvider;
         _builder = builder;
-        _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<MainWindow>();
         
-        // Set the panel
-        _homeStackContainer?.Append(new Feed(
-            _sessionService,
-            _userFeedService,
-            _credentialProvider,
-            _loggerFactory));
+        var feed = new Feed(
+            sessionService,
+            userFeedService,
+            credentialProvider,
+            loggerFactory);
+        
+        _homeStackContainer?.Append(feed);
     }
 
     public MainWindow(

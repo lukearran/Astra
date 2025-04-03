@@ -42,7 +42,7 @@ public class OnboardWindow : Adw.ApplicationWindow
         _sessionService = sessionService;
         _credentialProvider = credentialProvider;
         _logger = loggerFactory.CreateLogger<OnboardWindow>();
-
+        
         ArgumentNullException.ThrowIfNull(_signInButton);
 
         _signInButton.OnClicked += SignInButtonOnClicked;
@@ -94,7 +94,7 @@ public class OnboardWindow : Adw.ApplicationWindow
             return;
         }
 
-        var saved = _credentialProvider.SetCredential(new AtCredential(username, password));
+        var saved = await _credentialProvider.SetCredential(new AtCredential(username, password));
 
         if (saved is false)
         {
