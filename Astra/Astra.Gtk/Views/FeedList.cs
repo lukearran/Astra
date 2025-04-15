@@ -113,4 +113,11 @@ public class Feed : Box
             _feedScroll?.SetVisible(true);
         });
     }
+
+    public void Refresh()
+    {
+        _feedListBox?.RemoveAll();
+        _lastCursor = string.Empty;
+        _ = FetchPosts();
+    }
 }

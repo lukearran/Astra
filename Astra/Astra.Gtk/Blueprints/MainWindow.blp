@@ -38,6 +38,13 @@ Adw.ApplicationWindow main_window {
         menu-model: primary_menu;
         primary: true;
       }
+
+      [end]
+      Button {
+        icon-name: "view-refresh-symbolic";
+        tooltip-text: _("Refresh");
+        action-name: "app.refresh";
+      }
     }
 
     Adw.ViewStack view_stack {

@@ -52,4 +52,12 @@ public class MainWindow : Adw.ApplicationWindow
     {
         this.Application = application;
     }
+
+    public void Refresh()
+    {
+        _logger.LogInformation("Refreshing feed");
+
+        var feed = (Feed)_homeStackContainer?.GetFirstChild()!;
+        feed.Refresh();
+    }
 }

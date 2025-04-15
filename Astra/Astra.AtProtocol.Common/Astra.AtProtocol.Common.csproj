@@ -12,4 +12,8 @@
       </Reference>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FishyFlip" Version="3.8.0" />
+    </ItemGroup>
+
 </Project>
