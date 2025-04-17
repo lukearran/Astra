@@ -21,6 +21,8 @@ public class ApplicationEntry
     private readonly ICredentialProvider _credentialProvider;
     private readonly Application _application;
 
+    private MainWindow? _mainWindow;
+
     public ApplicationEntry(
         ILoggerFactory loggerFactory,
         ISessionService sessionService,
@@ -126,8 +128,6 @@ public class ApplicationEntry
             // TODO: Notify user of error
         }
     }
-
-    private MainWindow? _mainWindow;
 
     private void ShowMainWindow()
     {

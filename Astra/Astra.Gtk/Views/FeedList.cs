@@ -118,6 +118,8 @@ public class Feed : Box
     {
         _feedListBox?.RemoveAll();
         _lastCursor = string.Empty;
+        _feedSpinner?.SetVisible(true);
+        _feedScroll?.SetVisible(false);
         _ = FetchPosts();
     }
 }
