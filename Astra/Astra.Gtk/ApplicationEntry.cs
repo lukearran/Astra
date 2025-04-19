@@ -21,6 +21,8 @@ public class ApplicationEntry
     private readonly ICredentialProvider _credentialProvider;
     private readonly Application _application;
 
+    private MainWindow? _mainWindow;
+
     public ApplicationEntry(
         ILoggerFactory loggerFactory,
         ISessionService sessionService,
@@ -42,7 +44,17 @@ public class ApplicationEntry
 
     public void Run(string[] args) => _application.RunWithSynchronizationContext(args);
 
-    private void OnStartup(Gio.Application sender, EventArgs args) => _ = StartupHook(sender);
+    private void OnStartup(Gio.Application sender, EventArgs args)
+    {
+        _ = StartupHook(sender);
+
+        var refresh = SimpleAction.New("refresh", null);
+        refresh.OnActivate += (sender, args) =>
+        {
+            _mainWindow?.Refresh();
+        };
+        _application.AddAction(refresh);
+    }
 
     private void OnActivate(Application sender, EventArgs args)
     {
@@ -121,14 +133,14 @@ public class ApplicationEntry
     {
         _application.Release();
 
-        var mainWindow = new MainWindow(
+        _mainWindow = new MainWindow(
             (Adw.Application)_application,
             _sessionService,
             _userFeedService,
             _credentialProvider,
             _loggerFactory);
 
-        mainWindow.Show();
+        _mainWindow.Show();
     }
 
     private static void SetupResources()

@@ -14,6 +14,8 @@ public class MainWindow : Adw.ApplicationWindow
     private readonly ILogger<MainWindow> _logger;
     private readonly Builder _builder;
 
+    private Feed? _feed;
+
     private MainWindow(
         ILoggerFactory loggerFactory,
         ISessionService sessionService,
@@ -27,13 +29,13 @@ public class MainWindow : Adw.ApplicationWindow
         _builder = builder;
         _logger = loggerFactory.CreateLogger<MainWindow>();
         
-        var feed = new Feed(
+        _feed = new Feed(
             sessionService,
             userFeedService,
             credentialProvider,
             loggerFactory);
         
-        _homeStackContainer?.Append(feed);
+        _homeStackContainer?.Append(_feed);
     }
 
     public MainWindow(
@@ -51,5 +53,11 @@ public class MainWindow : Adw.ApplicationWindow
             "main_window")
     {
         this.Application = application;
+    }
+
+    public void Refresh()
+    {
+        _logger.LogInformation("Refreshing feed");
+        _feed?.Refresh();
     }
 }

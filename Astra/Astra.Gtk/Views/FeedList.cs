@@ -109,8 +109,27 @@ public class Feed : Box
                 _feedListBox?.Append(statusItem);
             }
 
-            _feedSpinner?.SetVisible(false);
-            _feedScroll?.SetVisible(true);
+            HideSpinner();
         });
+    }
+
+    private void ShowSpinner()
+    {
+        _feedSpinner?.SetVisible(true);
+        _feedScroll?.SetVisible(false);
+    }
+
+    private void HideSpinner()
+    {
+        _feedSpinner?.SetVisible(false);
+        _feedScroll?.SetVisible(true);
+    }
+
+    public void Refresh()
+    {
+        _feedListBox?.RemoveAll();
+        _lastCursor = string.Empty;
+        ShowSpinner();
+        _ = FetchPosts();
     }
 }
