@@ -279,9 +279,18 @@ public class StatusItem : ListBoxRow
         _embeddedContentFrame?.SetVisible(true);
         _externalLinkContainer?.SetVisible(true);
 
-        _embeddedContentHeadline?.SetLabel(externalContent.External.Title.Trim());
+        _embeddedContentHeadline?.SetLabel(
+            externalContent
+                .External.Title
+                .Trim()
+                .Replace(Environment.NewLine, " ")
+                .CutWithEllipsis(maxChars: 200));
 
-        _embeddedContentDescription?.SetLabel(externalContent.External.Description.Trim());
+        _embeddedContentDescription?.SetLabel(
+            externalContent.External.Description
+                .Trim()
+                .Replace(Environment.NewLine, " ")
+                .CutWithEllipsis(maxChars: 200));
 
         _embeddedContentLink?.SetLabel(
             externalContent.External.Uri.ParseRegex(

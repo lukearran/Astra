@@ -1,85 +1,64 @@
 using Gtk 4.0;
 using Adw 1;
 
-Gtk.Box not_built_box {
-  spacing: 10;
-  orientation: horizontal;
-  hexpand: true;
-  vexpand: true;
-  halign: center;
-  valign: center;
-
-  Gtk.Image {
-    icon-name: "dialog-information-symbolic";
-    pixel-size: 48;
-  }
-
-  Gtk.Label {
-    margin-start: 5;
-    label: "This feature is not ready yet.";
-  }
-}
-
 Adw.ApplicationWindow main_window {
-  default-width: 500;
+  default-width: 975;
   default-height: 800;
-  width-request: 360;
-  height-request: 360;
+  width-request: 420;
+  height-request: 390;
 
-  Adw.ToolbarView {
-    [top]
-    Adw.HeaderBar {
-      show-title: true;
+  Adw.Breakpoint {
+    condition ("max-width: 750sp")
 
-      [end]
-      MenuButton {
-        tooltip-text: _("Main Menu");
-        icon-name: "view-more-symbolic";
-        menu-model: primary_menu;
-        primary: true;
-      }
-
-      [end]
-      Button {
-        icon-name: "view-refresh-symbolic";
-        tooltip-text: _("Refresh");
-        action-name: "app.refresh";
-      }
-    }
-
-    Adw.ViewStack view_stack {
-      Adw.ViewStackPage home_stack_page {
-        name: "home";
-        title: "Home";
-        icon-name: "go-home-symbolic";
-        child: Box home_page_container {
-          vexpand: true;
-          hexpand: true;
-        };
-      }
-
-      Adw.ViewStackPage {
-        name: "search";
-        title: "Search";
-        icon-name: "edit-find-symbolic";
-        child: not_built_box;
-      }
-
-      Adw.ViewStackPage {
-        name: "notifications";
-        title: "Notifications";
-        icon-name: "mail-unread-symbolic";
-        child: not_built_box;
-      }
-
-      Adw.ViewStackPage {
-        name: "profile";
-        title: "Profile";
-        icon-name: "user-info-symbolic";
-        child: not_built_box;
-      }
+    setters {
+      split_view.collapsed: true;
     }
   }
+
+  content: Adw.OverlaySplitView split_view {
+    min-sidebar-width: 300;
+
+    sidebar: Adw.NavigationPage {
+      title: _("Astra");
+      tag: "menu";
+
+      child: Adw.ToolbarView {
+        [top]
+        Adw.HeaderBar {
+          show-title: true;
+
+          [start]
+          Adw.Avatar {
+            size: 25;
+            show-initials: true;
+            margin-start: 5;
+            text: "Jay Doe";
+          }
+
+          [end]
+          MenuButton {
+            tooltip-text: _("Main Menu");
+            icon-name: "view-more-symbolic";
+            menu-model: primary_menu;
+            primary: true;
+          }
+        }
+
+        content: ListBox sidebar_menu {
+          selection-mode: single;
+
+          styles [
+            "transparent",
+          ]
+        };
+      };
+    };
+
+    content: Box _content {
+      vexpand: true;
+      hexpand: true;
+    };
+  };
 }
 
 menu primary_menu {

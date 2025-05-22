@@ -9,5 +9,9 @@
         <file preprocess="xml-stripblanks">heart-outline-thick-symbolic.svg</file>
         <file preprocess="xml-stripblanks">menu-large-symbolic.svg</file>
         <file preprocess="xml-stripblanks">cloud-filled-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">bell-outline-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">user-home-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">people-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">earth-symbolic.svg</file>
     </gresource>
 </gresources>
