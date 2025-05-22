@@ -14,7 +14,7 @@ public class MainWindow : Adw.ApplicationWindow
     private readonly ILogger<MainWindow> _logger;
     private readonly Builder _builder;
 
-    private Feed? _feed;
+    private readonly Feed? _feed;
 
     private MainWindow(
         ILoggerFactory loggerFactory,
