@@ -8,14 +8,26 @@ namespace Astra.Gtk.Views;
 
 public class MainWindow : Adw.ApplicationWindow
 {
-    [Connect("home_page_container")]
-    private readonly Box? _homeStackContainer = null;
+    [Connect("sidebar_menu")]
+    private readonly ListBox? _sidebarMenuList = null;
+    
+    [Connect("split_view")]
+    private readonly Adw.OverlaySplitView? _overlaySplitView = null;
 
+    private readonly ISessionService _sessionService;
+    
+    private readonly IUserFeedService _userFeedService;
+    
+    private readonly ICredentialProvider _credentialProvider;
+    
     private readonly ILogger<MainWindow> _logger;
-    private readonly Builder _builder;
-
-    private Feed? _feed;
-
+    
+    private readonly ILoggerFactory _loggerFactory;
+    
+    private readonly List<SidebarMenuItem> _sidebarMenuItems = [
+        new("user-home-symbolic", "Home", typeof(FeedNavPage)),
+    ];
+    
     private MainWindow(
         ILoggerFactory loggerFactory,
         ISessionService sessionService,
@@ -26,16 +38,21 @@ public class MainWindow : Adw.ApplicationWindow
     {
         builder.Connect(this);
 
-        _builder = builder;
+        _loggerFactory = loggerFactory;
+        _sessionService = sessionService;
+        _userFeedService = userFeedService;
+        _credentialProvider = credentialProvider;
+        
         _logger = loggerFactory.CreateLogger<MainWindow>();
         
-        _feed = new Feed(
-            sessionService,
-            userFeedService,
-            credentialProvider,
-            loggerFactory);
+        _sidebarMenuItems.ForEach(item => _sidebarMenuList?.Append(item));
+
+        if (_sidebarMenuList != null)
+        {
+            _sidebarMenuList.OnRowSelected += OnSidebarMenuItemSelected;
+        }
         
-        _homeStackContainer?.Append(_feed);
+        _sidebarMenuList?.SelectRow(_sidebarMenuItems.First());
     }
 
     public MainWindow(
@@ -54,10 +71,25 @@ public class MainWindow : Adw.ApplicationWindow
     {
         this.Application = application;
     }
-
-    public void Refresh()
+    
+    private void OnSidebarMenuItemSelected(ListBox sender, ListBox.RowSelectedSignalArgs args)
     {
-        _logger.LogInformation("Refreshing feed");
-        _feed?.Refresh();
+        if (args.Row is not SidebarMenuItem sidebarMenuItem)
+        {
+            return;
+        }
+        
+        _logger.LogDebug("'{SidebarMenuItemName}' sidebar item selected, using {PageType} page type...",
+            sidebarMenuItem.Name, sidebarMenuItem.PageViewType);
+        
+        if (sidebarMenuItem.PageViewType == typeof(FeedNavPage))
+        {
+            _overlaySplitView!.Content = FeedNavPage.Instance(
+                _loggerFactory,
+                _sessionService,
+                _userFeedService,
+                _credentialProvider,
+                _overlaySplitView ?? throw new NullReferenceException());
+        }
     }
 }

@@ -1,0 +1,56 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.NavigationPage _root {
+    child: Adw.BreakpointBin {
+        width-request: 150;
+        height-request: 150;
+
+        Adw.Breakpoint {
+            condition ("max-width: 550sp")
+
+            setters {
+                top_view_switcher.visible: false;
+                bottom_bar.revealed: true;
+            }
+        }
+
+        Adw.ToolbarView {
+            [top]
+            Adw.HeaderBar {
+                show-title: true;
+
+                [start]
+                ToggleButton show_sidebar_button {
+                    icon-name: "sidebar-show-symbolic";
+                    tooltip-text: _("Toggle Sidebar");
+                }
+
+                [center]
+                Adw.ViewSwitcher top_view_switcher {
+                    stack: feed_stack;
+                    policy: wide;
+                    halign: center;
+                }
+
+                [end]
+                Button refresh_button {
+                    icon-name: "view-refresh-symbolic";
+                    tooltip-text: _("Refresh");
+                }
+            }
+
+            [bottom]
+            ActionBar bottom_bar {
+                revealed: false;
+
+                [center]
+                Adw.ViewSwitcher bottom_view_switcher {
+                    stack: feed_stack;
+                }
+            }
+
+            Adw.ViewStack feed_stack {}
+        }
+    };
+}

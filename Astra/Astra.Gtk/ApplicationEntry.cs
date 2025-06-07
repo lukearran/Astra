@@ -47,13 +47,6 @@ public class ApplicationEntry
     private void OnStartup(Gio.Application sender, EventArgs args)
     {
         _ = StartupHook(sender);
-
-        var refresh = SimpleAction.New("refresh", null);
-        refresh.OnActivate += (sender, args) =>
-        {
-            _mainWindow?.Refresh();
-        };
-        _application.AddAction(refresh);
     }
 
     private void OnActivate(Application sender, EventArgs args)

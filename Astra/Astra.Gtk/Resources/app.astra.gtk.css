@@ -1,7 +1,14 @@
+/* General */
 .transparent {
     background-color: transparent;
 }
 
+/* Sidebar */
+.sidebar-item {
+    border-radius: 10px;
+}
+
+/* Post Cards */
 .post_reply_button:hover {
     background-color: rgba(232, 231, 171, 0.15);
 }

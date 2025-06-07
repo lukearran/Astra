@@ -33,25 +33,26 @@ ListBoxRow _root {
       Box {
         orientation: horizontal;
 
-        Adw.Avatar profile_picture_mini {
-          size: 10;
-          show-initials: false;
-        }
+        Adw.WrapBox {
+          Adw.Avatar profile_picture_mini {
+            size: 10;
+            show-initials: false;
+          }
 
-        Label post_handle {
-          margin-start: 5;
-          label: "Unknown";
-          use-markup: true;
+          Label post_handle {
+            margin-start: 5;
+            label: "Unknown";
+            use-markup: true;
 
-          styles [
-            "handle_display_name"
-          ]
-        }
+            styles [
+              "handle_display_name",
+            ]
+          }
 
-        Label post_handle_sub {
-          margin-start: 5;
-          opacity: 0.5;
-          label: "@tomwarren.co.uk · 4m";
+          Label post_handle_sub {
+            margin-start: 5;
+            opacity: 0.5;
+          }
         }
       }
 
@@ -63,7 +64,6 @@ ListBoxRow _root {
           lines: 250;
           justify: left;
           use-markup: true;
-          label: "Hello world! This is a great day.";
         }
       }
 
@@ -91,7 +91,6 @@ ListBoxRow _root {
         valign: center;
         hexpand: false;
         vexpand: true;
-        width-request: 500;
         margin-top: 18;
         margin-bottom: 18;
         margin-end: 6;
@@ -110,7 +109,6 @@ ListBoxRow _root {
         valign: center;
         hexpand: false;
         vexpand: true;
-        width-request: 500;
         margin-top: 18;
         margin-bottom: 18;
         margin-end: 6;
@@ -120,7 +118,6 @@ ListBoxRow _root {
         ]
 
         Box external_link_container {
-          visible: false;
           orientation: vertical;
 
           Picture embedded_card_thumbnail {
@@ -190,68 +187,69 @@ ListBoxRow _root {
         margin-top: 5;
         orientation: horizontal;
         spacing: 0;
-        width-request: 300;
 
-        Button reply_button {
-          margin-end: 30;
-          valign: center;
+        Adw.WrapBox {
+          Button reply_button {
+            margin-end: 30;
+            valign: center;
 
-          Adw.ButtonContent reply_button_content {
-            label: _("25");
-            icon-name: "chat-bubble-empty-symbolic";
+            Adw.ButtonContent reply_button_content {
+              label: _("25");
+              icon-name: "chat-bubble-empty-symbolic";
+            }
+
+            styles [
+              "transparent",
+              "post_reply_button",
+              "opaque",
+            ]
           }
 
-          styles [
-            "transparent",
-            "post_reply_button",
-            "opaque",
-          ]
-        }
+          ToggleButton repost_button {
+            margin-end: 30;
+            valign: center;
 
-        ToggleButton repost_button {
-          margin-end: 30;
-          valign: center;
+            Adw.ButtonContent repost_button_content {
+              label: _("25");
+              icon-name: "arrow-hook-right-horizontal-symbolic";
+            }
 
-          Adw.ButtonContent repost_button_content {
-            label: _("25");
-            icon-name: "arrow-hook-right-horizontal-symbolic";
+            styles [
+              "transparent",
+              "post_repost_button",
+              "opaque",
+            ]
           }
 
-          styles [
-            "transparent",
-            "post_repost_button",
-            "opaque",
-          ]
-        }
+          ToggleButton heart_button {
+            margin-end: 30;
+            valign: center;
 
-        ToggleButton heart_button {
-          margin-end: 30;
-          valign: center;
+            Adw.ButtonContent heart_button_content {
+              label: _("25");
+              icon-name: "heart-outline-thick-symbolic";
+            }
 
-          Adw.ButtonContent heart_button_content {
-            label: _("25");
-            icon-name: "heart-outline-thick-symbolic";
+            styles [
+              "transparent",
+              "post_love_button",
+              "opaque",
+            ]
           }
 
-          styles [
-            "transparent",
-            "post_love_button",
-            "opaque",
-          ]
-        }
+          MenuButton status_menu_button {
+            menu-model: secondary_button_menu;
 
-        MenuButton status_menu_button {
-          menu-model: secondary_button_menu;
+            Adw.ButtonContent {
+              icon-name: "menu-large-symbolic";
+            }
 
-          Adw.ButtonContent {
-            icon-name: "menu-large-symbolic";
+            styles [
+              "transparent",
+              "post_menu_button",
+              "opaque",
+            ]
           }
-
-          styles [
-            "transparent",
-            "post_menu_button",
-            "opaque",
-          ]
         }
       }
     }
