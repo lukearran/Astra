@@ -1,4 +1,6 @@
 using Astra.AtProtocol.Client.Interfaces;
+using Astra.AtProtocol.Client.Models;
+using Astra.AtProtocol.Common;
 using Astra.AtProtocol.Common.Interfaces;
 using Astra.AtProtocol.Common.Models.Views;
 using Gtk;
@@ -19,6 +21,9 @@ public class Feed : Box
 
     [Connect("feed_scroll")] private readonly ScrolledWindow? _feedScroll = null;
 
+    // Source
+    private readonly AtFeed _source;
+    
     // Services
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
@@ -31,6 +36,7 @@ public class Feed : Box
     private string _lastCursor = string.Empty;
 
     private Feed(
+        AtFeed source,
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
@@ -40,6 +46,7 @@ public class Feed : Box
     {
         builder.Connect(this);
 
+        _source = source;
         _logger = loggerFactory.CreateLogger<Feed>();
         _sessionService = sessionService;
         _userFeedService = userFeedService;
@@ -51,11 +58,13 @@ public class Feed : Box
     }
 
     public Feed(
+        AtFeed source,
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
         ILoggerFactory loggerFactory)
         : this(
+            source,
             sessionService,
             userFeedService,
             credentialProvider,
@@ -88,14 +97,27 @@ public class Feed : Box
     {
         await Task.Run(async () =>
         {
-            var timelineResult = await _userFeedService.GetUserTimeline(
-                limit: 20,
-                cursor: cursor,
-                token: CancellationToken.None);
+            FeedResult feedResult;
 
-            _lastCursor = timelineResult.Cursor ?? string.Empty;
+            if (_source.Type == CommonConstants.FollowingFeedTypeName)
+            {
+                feedResult = await _userFeedService.GetFollowingFeed(
+                    limit: CommonConstants.FeedFetchLimit,
+                    cursor: cursor,
+                    token: CancellationToken.None);
+            }
+            else
+            {
+                feedResult = await _userFeedService.GetFeed(
+                    feedUri: _source.Value,
+                    limit: CommonConstants.FeedFetchLimit,
+                    cursor: cursor,
+                    token: CancellationToken.None);
+            }
 
-            var statusUpdates = timelineResult
+            _lastCursor = feedResult.Cursor ?? string.Empty;
+
+            var statusUpdates = feedResult
                 .Posts
                 .Select(x => x.Post)
                 .ToList();

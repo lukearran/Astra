@@ -10,12 +10,20 @@ public class AtSessionResult(
     string? didHandler = null,
     string? didType = null,
     string? token = null,
-    ProfileViewDetailed? profile = null) : BaseResult(success, message)
+    AtProfile? profile = null,
+    AtUserPreferences? preferences = null)
+    : BaseResult(success, message)
 {
     public string? Email { get; } = email;
+    
     public string? Handle { get; } = handle;
+    
     public string? DidHandler { get; } = didHandler;
+    
     public string? DidType { get; } = didType;
+    
     public string? Token { get; } = token;
-    public ProfileViewDetailed? ProfileView { get; } = profile;
+    public AtProfile? Profile { get; } = profile;
+
+    public AtUserPreferences? UserPreferences { get; } = preferences;
 }

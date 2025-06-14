@@ -2,7 +2,7 @@ using FishyFlip.Lexicon.App.Bsky.Feed;
 
 namespace Astra.AtProtocol.Client.Models;
 
-public class TimelineResult(
+public class FeedResult(
     bool success,
     string message,
     List<FeedViewPost>? posts = null,

@@ -10,4 +10,8 @@
       <PackageReference Include="FishyFlip" Version="3.10.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Astra.AtProtocol.Common\Astra.AtProtocol.Common.csproj" />
+    </ItemGroup>
+
 </Project>

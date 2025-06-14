@@ -107,23 +107,22 @@ public class MainWindow : Adw.ApplicationWindow
         if (currentSession == null)
             return;
         
-        _avatar?.SetText(currentSession?.ProfileView?.DisplayName ?? string.Empty);
+        _avatar?.SetText(currentSession?.Profile?.DisplayName ?? string.Empty);
         
-        // Set the profile picture, if the is one
-        if (!string.IsNullOrEmpty(currentSession?.ProfileView?.Avatar))
+        if (!string.IsNullOrEmpty(currentSession?.Profile?.AvatarUrl))
         {
             try
             {
-                var thumbnailBytes = await NetworkFunction.GetDataInBytesAsync(currentSession.ProfileView.Avatar);
+                var avatarBytes = await NetworkFunction.GetDataInBytesAsync(currentSession.Profile.AvatarUrl);
 
-                if (thumbnailBytes != null && _avatar != null)
+                if (avatarBytes != null && _avatar != null)
                 {
-                    _avatar.CustomImage = Texture.NewFromBytes(thumbnailBytes);
+                    _avatar.CustomImage = Texture.NewFromBytes(avatarBytes);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to load the session avatar: {ThumbnailUrl}", currentSession.ProfileView.Avatar);
+                _logger.LogError(ex, "Failed to load the session avatar: {ThumbnailUrl}", currentSession.Profile.AvatarUrl);
             }
         }
     }

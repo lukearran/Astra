@@ -24,6 +24,8 @@ public class SessionService(ATProtocol protocol) : BaseService(protocol), ISessi
         }
         
         var sessionProfile = await Protocol.Actor.GetProfileAsync(session.Handle, token);
+
+        var preferencesOutput = await Protocol.Actor.GetPreferencesAsync(token);
         
         CurrentSession = new AtSessionResult(
             success: true,
@@ -33,7 +35,8 @@ public class SessionService(ATProtocol protocol) : BaseService(protocol), ISessi
             didHandler: session.Did.Handler,
             didType: session.Did.Type,
             token: session.AccessJwt,
-            profile: sessionProfile.Value as ProfileViewDetailed
+            profile: new AtProfile(sessionProfile.Value as ProfileViewDetailed ?? throw new InvalidOperationException()),
+            preferences: new AtUserPreferences(preferencesOutput.Value as GetPreferencesOutput ?? throw new InvalidOperationException())
         );
         
         return CurrentSession;

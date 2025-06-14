@@ -13,5 +13,8 @@
         <file preprocess="xml-stripblanks">user-home-symbolic.svg</file>
         <file preprocess="xml-stripblanks">people-symbolic.svg</file>
         <file preprocess="xml-stripblanks">earth-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">camera-flash-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">video-clip-symbolic.svg</file>
+        <file preprocess="xml-stripblanks">newspaper-symbolic.svg</file>
     </gresource>
 </gresources>
