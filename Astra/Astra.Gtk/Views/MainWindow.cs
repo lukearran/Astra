@@ -1,6 +1,8 @@
 using Adw.Internal;
 using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Common.Interfaces;
+using Astra.Gtk.Functions;
+using Gdk;
 using Gtk;
 using Microsoft.Extensions.Logging;
 
@@ -13,6 +15,9 @@ public class MainWindow : Adw.ApplicationWindow
     
     [Connect("split_view")]
     private readonly Adw.OverlaySplitView? _overlaySplitView = null;
+    
+    [Connect("avatar")]
+    private readonly Adw.Avatar? _avatar = null;
 
     private readonly ISessionService _sessionService;
     
@@ -53,6 +58,8 @@ public class MainWindow : Adw.ApplicationWindow
         }
         
         _sidebarMenuList?.SelectRow(_sidebarMenuItems.First());
+
+        _ = SetProfileView();
     }
 
     public MainWindow(
@@ -90,6 +97,33 @@ public class MainWindow : Adw.ApplicationWindow
                 _userFeedService,
                 _credentialProvider,
                 _overlaySplitView ?? throw new NullReferenceException());
+        }
+    }
+
+    private async Task SetProfileView()
+    {
+        var currentSession = _sessionService.GetCurrentSession();
+
+        if (currentSession == null)
+            return;
+        
+        _avatar?.SetText(currentSession?.Profile?.DisplayName ?? string.Empty);
+        
+        if (!string.IsNullOrEmpty(currentSession?.Profile?.AvatarUrl))
+        {
+            try
+            {
+                var avatarBytes = await NetworkFunction.GetDataInBytesAsync(currentSession.Profile.AvatarUrl);
+
+                if (avatarBytes != null && _avatar != null)
+                {
+                    _avatar.CustomImage = Texture.NewFromBytes(avatarBytes);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to load the session avatar: {ThumbnailUrl}", currentSession.Profile.AvatarUrl);
+            }
         }
     }
 }

@@ -30,9 +30,10 @@
         - [ ] Submit repost
     - [ ] Quote post
     - [ ] View Replies
-    - [ ] Change feeds/algorithms
+    - [ ] Change feeds
+      - [X] Pinned feeds
+      - [ ] Manage all feeds
     - [ ] Create a post
-    - [ ] Responsive layout
     - [ ] Searching
     - [ ] Notifications
     - [ ] Messages

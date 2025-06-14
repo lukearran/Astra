@@ -1,3 +1,5 @@
+using FishyFlip.Lexicon.App.Bsky.Actor;
+
 namespace Astra.AtProtocol.Client.Models;
 
 public class AtSessionResult(
@@ -7,11 +9,21 @@ public class AtSessionResult(
     string? handle = null,
     string? didHandler = null,
     string? didType = null,
-    string? token = null) : BaseResult(success, message)
+    string? token = null,
+    AtProfile? profile = null,
+    AtUserPreferences? preferences = null)
+    : BaseResult(success, message)
 {
     public string? Email { get; } = email;
+    
     public string? Handle { get; } = handle;
+    
     public string? DidHandler { get; } = didHandler;
+    
     public string? DidType { get; } = didType;
+    
     public string? Token { get; } = token;
+    public AtProfile? Profile { get; } = profile;
+
+    public AtUserPreferences? UserPreferences { get; } = preferences;
 }

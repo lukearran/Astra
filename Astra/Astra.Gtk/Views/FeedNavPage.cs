@@ -2,6 +2,7 @@ using Adw.Internal;
 using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Common.Interfaces;
 using Astra.AtProtocol.Common.Models.Views;
+using Astra.Gtk.Resources;
 using GObject;
 using Gtk;
 using Microsoft.Extensions.Logging;
@@ -36,11 +37,13 @@ public class FeedNavPage : Adw.NavigationPage
     
     [Connect("refresh_button")]
     private readonly Button? _refreshButton = null;
+
+    private readonly ISessionService _sessionService;
+    private readonly IUserFeedService _userFeedService;
+    private readonly ICredentialProvider _credentialProvider;
+    private readonly ILogger<FeedNavPage> _logger;
     
-    // TODO: This list should be populated from API. For now, display a placeholder following view
-    private readonly List<FeedAlgorithmView>  _feedAlgorithms = [
-        new FeedAlgorithmView(displayName: "Following", displayIcon: "people-symbolic", algorithm: "todo"),
-    ];
+    private readonly ILoggerFactory _loggerFactory;
     
     private FeedNavPage(
         ILoggerFactory loggerFactory,
@@ -51,6 +54,12 @@ public class FeedNavPage : Adw.NavigationPage
         Adw.OverlaySplitView sourceOverlay) : base(
         new NavigationPageHandle(builder.GetPointer("_root"), false))
     {
+        _sessionService = sessionService;
+        _userFeedService = userFeedService;
+        _credentialProvider = credentialProvider;
+        _loggerFactory = loggerFactory;
+        _logger = _loggerFactory.CreateLogger<FeedNavPage>();
+        
         builder.Connect(this);
         
         ArgumentNullException.ThrowIfNull(_refreshButton);
@@ -69,24 +78,10 @@ public class FeedNavPage : Adw.NavigationPage
         
         _refreshButton.OnClicked += OnRefreshButtonClicked;
 
-        // Create stack pages from algorithms
-        foreach (var algo in _feedAlgorithms)
-        {
-            var feed = new Feed(
-                sessionService,
-                userFeedService,
-                credentialProvider,
-                loggerFactory);
-            
-            _feedStack?.AddTitledWithIcon(
-                child: feed,
-                name: algo.DisplayName,
-                title: algo.DisplayName,
-                iconName: algo.DisplayIcon);
-        }
+        _ = SetDisplayFeeds();
     }
 
-    public FeedNavPage(
+    private FeedNavPage(
         ILoggerFactory loggerFactory,
         ISessionService sessionService,
         IUserFeedService userFeedService,
@@ -107,5 +102,41 @@ public class FeedNavPage : Adw.NavigationPage
     {
         var currentPage = _feedStack?.VisibleChild as Feed ?? throw new NullReferenceException();
         currentPage.Refresh();
+    }
+
+    private async Task SetDisplayFeeds()
+    {
+        var userFeeds = _sessionService
+            .GetCurrentSession()?
+            .UserPreferences?
+            .Feeds
+            .Where(x => x.IsPinned)
+            .ToList();
+        
+        foreach (var userFeed in userFeeds?.Slice(0, userFeeds.Count > 5 ? 5 : userFeeds.Count) ?? [])
+        {
+            try
+            {
+                var feedDetail = await _userFeedService.GetFeedDetail(userFeed);
+
+                var feedView = new Feed(
+                    userFeed,
+                    _sessionService,
+                    _userFeedService,
+                    _credentialProvider,
+                    _loggerFactory);
+
+                _feedStack?.AddTitledWithIcon(
+                    child: feedView,
+                    name: feedDetail.DisplayName,
+                    title: feedDetail.DisplayName,
+                    iconName: FeedIconMapper.MapIconName(userFeed.Value));
+            }
+            catch (Exception ex)
+            {
+                // TODO: Notify user of error
+                _logger.LogError(ex, "Failed to instantiate feed '{FeedName}'", userFeed.Id);
+            }
+        }
     }
 }
