@@ -1,8 +1,8 @@
 using Adw.Internal;
 using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Common.Interfaces;
-using Astra.AtProtocol.Common.Models.Views;
 using Astra.Gtk.Resources;
+using Astra.Gtk.Views.Providers;
 using GObject;
 using Gtk;
 using Microsoft.Extensions.Logging;
@@ -19,30 +19,35 @@ public class FeedNavPage : Adw.NavigationPage
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
-        Adw.OverlaySplitView sourceOverlay)
+        Adw.OverlaySplitView sourceOverlay,
+        INavigationProvider navigationProvider)
     {
         return _instance ??= new FeedNavPage(
             loggerFactory,
             sessionService,
             userFeedService,
             credentialProvider,
-            sourceOverlay);
+            sourceOverlay,
+            navigationProvider);
     }
     
     [Connect("feed_stack")]
     private readonly Adw.ViewStack? _feedStack = null;
     
-    [Connect("show_sidebar_button")]
-    private readonly ToggleButton? _toggleButton = null;
-    
     [Connect("refresh_button")]
     private readonly Button? _refreshButton = null;
+    
+    [Connect("toast_overlay")]
+    private readonly Adw.ToastOverlay? _toastOverlay = null;
+    
+    [Connect("show_sidebar_button")]
+    private readonly ToggleButton? _toggleButton = null;
 
+    private readonly INavigationProvider _navigationProvider;
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
     private readonly ICredentialProvider _credentialProvider;
     private readonly ILogger<FeedNavPage> _logger;
-    
     private readonly ILoggerFactory _loggerFactory;
     
     private FeedNavPage(
@@ -51,19 +56,19 @@ public class FeedNavPage : Adw.NavigationPage
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
+        INavigationProvider navigationProvider,
         Adw.OverlaySplitView sourceOverlay) : base(
         new NavigationPageHandle(builder.GetPointer("_root"), false))
     {
+        builder.Connect(this);
+        
+        _navigationProvider = navigationProvider;
         _sessionService = sessionService;
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
         _loggerFactory = loggerFactory;
         _logger = _loggerFactory.CreateLogger<FeedNavPage>();
         
-        builder.Connect(this);
-        
-        ArgumentNullException.ThrowIfNull(_refreshButton);
-
         sourceOverlay.BindProperty(
             "show-sidebar",
             _toggleButton ?? throw new NullReferenceException(), 
@@ -76,6 +81,8 @@ public class FeedNavPage : Adw.NavigationPage
             "active",
             BindingFlags.SyncCreate);
         
+        ArgumentNullException.ThrowIfNull(_refreshButton);
+        
         _refreshButton.OnClicked += OnRefreshButtonClicked;
 
         _ = SetDisplayFeeds();
@@ -86,21 +93,23 @@ public class FeedNavPage : Adw.NavigationPage
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
-        Adw.OverlaySplitView sourceOverlay)
+        Adw.OverlaySplitView sourceOverlay,
+        INavigationProvider navigationProvider)
         : this(
             loggerFactory,
             new Builder("FeedNavPage.ui"),
             sessionService,
             userFeedService,
             credentialProvider,
+            navigationProvider,
             sourceOverlay)
     {
-        
     }
     
     private void OnRefreshButtonClicked(Button sender, EventArgs args)
     {
         var currentPage = _feedStack?.VisibleChild as Feed ?? throw new NullReferenceException();
+        
         currentPage.Refresh();
     }
 
@@ -115,10 +124,14 @@ public class FeedNavPage : Adw.NavigationPage
         
         foreach (var userFeed in userFeeds?.Slice(0, userFeeds.Count > 5 ? 5 : userFeeds.Count) ?? [])
         {
+            string? feedName = null;
+            
             try
             {
                 var feedDetail = await _userFeedService.GetFeedDetail(userFeed);
 
+                feedName = feedDetail.DisplayName;
+                
                 var feedView = new Feed(
                     userFeed,
                     _sessionService,
@@ -134,9 +147,13 @@ public class FeedNavPage : Adw.NavigationPage
             }
             catch (Exception ex)
             {
-                // TODO: Notify user of error
                 _logger.LogError(ex, "Failed to instantiate feed '{FeedName}'", userFeed.Id);
+                
+                ShowToastMessage($"Error loading {feedName ?? "your feed"}");
             }
         }
     }
+
+    private void ShowToastMessage(string message) =>
+        _toastOverlay?.AddToast(Adw.Toast.New(message));
 }

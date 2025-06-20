@@ -2,6 +2,7 @@ using Adw.Internal;
 using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Common.Interfaces;
 using Astra.Gtk.Functions;
+using Astra.Gtk.Views.Providers;
 using Gdk;
 using Gtk;
 using Microsoft.Extensions.Logging;
@@ -16,8 +17,13 @@ public class MainWindow : Adw.ApplicationWindow
     [Connect("split_view")]
     private readonly Adw.OverlaySplitView? _overlaySplitView = null;
     
+    [Connect("navigation_view")]
+    private readonly Adw.NavigationView? _navigationView = null;
+    
     [Connect("avatar")]
     private readonly Adw.Avatar? _avatar = null;
+    
+    private readonly INavigationProvider _navigationProvider;
 
     private readonly ISessionService _sessionService;
     
@@ -47,6 +53,8 @@ public class MainWindow : Adw.ApplicationWindow
         _sessionService = sessionService;
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
+        _navigationProvider = new NavigationProvider(
+            _navigationView ?? throw new ArgumentNullException(nameof(_navigationView)));
         
         _logger = loggerFactory.CreateLogger<MainWindow>();
         
@@ -91,12 +99,13 @@ public class MainWindow : Adw.ApplicationWindow
         
         if (sidebarMenuItem.PageViewType == typeof(FeedNavPage))
         {
-            _overlaySplitView!.Content = FeedNavPage.Instance(
+            _navigationView?.Add(FeedNavPage.Instance(
                 _loggerFactory,
                 _sessionService,
                 _userFeedService,
                 _credentialProvider,
-                _overlaySplitView ?? throw new NullReferenceException());
+                _overlaySplitView ?? throw new NullReferenceException(),
+                _navigationProvider));
         }
     }
 

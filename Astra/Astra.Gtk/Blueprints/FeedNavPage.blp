@@ -4,55 +4,57 @@ using Adw 1;
 Adw.NavigationPage _root {
     title: _("Home");
 
-    child: Adw.BreakpointBin {
-        width-request: 150;
-        height-request: 150;
+    child: Adw.ToastOverlay toast_overlay {
+        Adw.BreakpointBin {
+            width-request: 150;
+            height-request: 150;
 
-        Adw.Breakpoint {
-            condition ("max-width: 550sp")
+            Adw.Breakpoint {
+                condition ("max-width: 550sp")
 
-            setters {
-                top_view_switcher.visible: false;
-                bottom_bar.revealed: true;
-            }
-        }
-
-        Adw.ToolbarView {
-            [top]
-            Adw.HeaderBar {
-                show-title: true;
-
-                [start]
-                ToggleButton show_sidebar_button {
-                    icon-name: "sidebar-show-symbolic";
-                    tooltip-text: _("Toggle Sidebar");
-                }
-
-                [end]
-                Button refresh_button {
-                    icon-name: "view-refresh-symbolic";
-                    tooltip-text: _("Refresh");
+                setters {
+                    top_view_switcher.visible: false;
+                    bottom_bar.revealed: true;
                 }
             }
 
-            [top]
-            Adw.ViewSwitcher top_view_switcher {
-                stack: feed_stack;
-                policy: wide;
-                halign: center;
-            }
+            Adw.ToolbarView {
+                [top]
+                Adw.HeaderBar {
+                    show-title: true;
 
-            [bottom]
-            ActionBar bottom_bar {
-                revealed: false;
+                    [start]
+                    ToggleButton show_sidebar_button {
+                        icon-name: "sidebar-show-symbolic";
+                        tooltip-text: _("Toggle Sidebar");
+                    }
 
-                [center]
-                Adw.ViewSwitcher bottom_view_switcher {
+                    [end]
+                    Button refresh_button {
+                        icon-name: "view-refresh-symbolic";
+                        tooltip-text: _("Refresh");
+                    }
+                }
+
+                [top]
+                Adw.ViewSwitcher top_view_switcher {
                     stack: feed_stack;
+                    policy: wide;
+                    halign: center;
                 }
-            }
 
-            Adw.ViewStack feed_stack {}
+                [bottom]
+                ActionBar bottom_bar {
+                    revealed: false;
+
+                    [center]
+                    Adw.ViewSwitcher bottom_view_switcher {
+                        stack: feed_stack;
+                    }
+                }
+
+                Adw.ViewStack feed_stack {}
+            }
         }
     };
 }

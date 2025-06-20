@@ -1,10 +1,12 @@
+using Astra.AtProtocol.Common;
+
 namespace Astra.Gtk.Resources;
 
 public static class FeedIconMapper
 {
     public static string MapIconName(string feedType)
     {
-        if (feedType.Contains("following"))
+        if (feedType.Contains(CommonConstants.UniqueFollowingFeedReference))
         {
             return "people-symbolic";
         }
