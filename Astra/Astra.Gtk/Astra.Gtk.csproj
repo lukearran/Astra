@@ -8,9 +8,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="GirCore.Adw-1" Version="0.6.2" />
-      <PackageReference Include="GirCore.Gtk-4.0" Version="0.6.2" />
-      <PackageReference Include="Serilog" Version="4.2.0" />
+      <PackageReference Include="GirCore.Adw-1" Version="0.6.3" />
+      <PackageReference Include="GirCore.Gtk-4.0" Version="0.6.3" />
+      <PackageReference Include="Serilog" Version="4.3.0" />
       <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
     </ItemGroup>
@@ -23,6 +23,73 @@
 
     <ItemGroup>
       <None Remove="Blueprints\MainWindow.ui" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Resources\sad-computer-symbolic.svg" />
+      <Resource Include="Resources\sad-computer-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\camera-flash-symbolic.svg" />
+      <Resource Include="Resources\camera-flash-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\chat-bubble-empty-symbolic.svg" />
+      <Resource Include="Resources\chat-bubble-empty-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\arrow-hook-right-horizontal-symbolic.svg" />
+      <Resource Include="Resources\arrow-hook-right-horizontal-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\newspaper-symbolic.svg" />
+      <Resource Include="Resources\newspaper-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\heart-outline-thick-symbolic.svg" />
+      <Resource Include="Resources\heart-outline-thick-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\astra-icon-colour.svg" />
+      <Resource Include="Resources\astra-icon-colour.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\earth-symbolic.svg" />
+      <Resource Include="Resources\earth-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\cloud-filled-symbolic.svg" />
+      <Resource Include="Resources\cloud-filled-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\bell-outline-symbolic.svg" />
+      <Resource Include="Resources\bell-outline-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\people-symbolic.svg" />
+      <Resource Include="Resources\people-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\app.astra.gtk.gresource.xml" />
+      <Resource Include="Resources\app.astra.gtk.gresource.xml">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\user-home-symbolic.svg" />
+      <Resource Include="Resources\user-home-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\app.astra.gtk.css" />
+      <Resource Include="Resources\app.astra.gtk.css">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\video-clip-symbolic.svg" />
+      <Resource Include="Resources\video-clip-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
+      <None Remove="Resources\menu-large-symbolic.svg" />
+      <Resource Include="Resources\menu-large-symbolic.svg">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Resource>
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

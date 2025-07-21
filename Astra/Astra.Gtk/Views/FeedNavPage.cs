@@ -137,7 +137,8 @@ public class FeedNavPage : Adw.NavigationPage
                     _sessionService,
                     _userFeedService,
                     _credentialProvider,
-                    _loggerFactory);
+                    _loggerFactory,
+                    _navigationProvider);
 
                 _feedStack?.AddTitledWithIcon(
                     child: feedView,

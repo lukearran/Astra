@@ -3,6 +3,7 @@ using Astra.AtProtocol.Client.Models;
 using Astra.AtProtocol.Common;
 using Astra.AtProtocol.Common.Interfaces;
 using Astra.AtProtocol.Common.Models.Views;
+using Astra.Gtk.Views.Providers;
 using Gtk;
 using Gtk.Internal;
 using Microsoft.Extensions.Logging;
@@ -34,6 +35,7 @@ public class Feed : Box
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
     private readonly ICredentialProvider _credentialProvider;
+    private readonly INavigationProvider _navigationProvider;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<Feed> _logger;
     private readonly Builder _builder;
@@ -47,18 +49,36 @@ public class Feed : Box
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
         ILoggerFactory loggerFactory,
+        INavigationProvider navigationProvider,
         Builder builder) :
         base(new BoxHandle(builder.GetPointer("_root"), false))
     {
         builder.Connect(this);
+        ArgumentNullException.ThrowIfNull(_feedListBox);
 
         _source = source;
         _logger = loggerFactory.CreateLogger<Feed>();
         _sessionService = sessionService;
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
+        _navigationProvider = navigationProvider;
         _builder = builder;
         _loggerFactory = loggerFactory;
+
+        _feedListBox.OnRowActivated += (sender, args) =>
+        {
+            if (args.Row is StatusItem statusItem)
+            {
+                var statusContent = statusItem.GetContent();
+                
+                _navigationProvider.Go(
+                    new StatusItemPage(
+                        statusContent.Uri,
+                        _userFeedService,
+                        _navigationProvider,
+                        _loggerFactory));
+            }
+        };
 
         _ = InitializeAt(builder);
     }
@@ -68,13 +88,15 @@ public class Feed : Box
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        INavigationProvider navigationProvider)
         : this(
             source,
             sessionService,
             userFeedService,
             credentialProvider,
             loggerFactory,
+            navigationProvider,
             new Builder("Feed.ui"))
     {
     }
@@ -131,7 +153,12 @@ public class Feed : Box
                     .ToList();
 
                 var statusItems = statusUpdates
-                    .Select(status => new StatusItem(new StatusItemView(status), _loggerFactory))
+                    .Select(status => new StatusItem(
+                        new StatusItemView(status),
+                        StatusItemMode.PostListItem,
+                        _loggerFactory,
+                        _userFeedService,
+                        _navigationProvider))
                     .ToArray();
 
                 foreach (var statusItem in statusItems)

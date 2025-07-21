@@ -1,7 +1,9 @@
+using Astra.AtProtocol.Client.Interfaces;
 using Astra.AtProtocol.Common.Models.Views;
 using Astra.Gtk.Extensions;
 using Astra.Gtk.Functions;
 using Astra.Gtk.Helpers;
+using Astra.Gtk.Views.Providers;
 using FishyFlip.Lexicon.App.Bsky.Embed;
 using Gdk;
 using Gtk;
@@ -19,11 +21,20 @@ using ToggleButton = Gtk.ToggleButton;
 
 namespace Astra.Gtk.Views;
 
+public enum StatusItemMode
+{
+    PostListItem,
+    ThreadParentPost,
+    ThreadReplyPost
+}
+
 public class StatusItem : ListBoxRow
 {
     // Logger
+    private readonly IUserFeedService _userFeedService;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<StatusItem> _logger;
+    private readonly INavigationProvider _navigationProvider;
 
     // Content model
     private readonly StatusItemView _content;
@@ -103,19 +114,39 @@ public class StatusItem : ListBoxRow
 
     [Connect("heart_button_content")]
     private readonly Adw.ButtonContent? _heartButtonContent = null;
+    
+    private readonly StatusItemMode _mode;
 
-    private StatusItem(ILoggerFactory loggerFactory, Builder builder, StatusItemView content) : base(new ListBoxRowHandle(
+    private StatusItem(
+        ILoggerFactory loggerFactory,
+        IUserFeedService userFeedService,
+        INavigationProvider navigationProvider,
+        Builder builder,
+        StatusItemView content,
+        StatusItemMode mode) : base(new ListBoxRowHandle(
         builder.GetPointer("_root"),
         false))
     {
         builder.Connect(this);
 
+        _mode = mode;
+
+        _userFeedService = userFeedService;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<StatusItem>();
+        _navigationProvider = navigationProvider;
 
         _logger.LogDebug("Creating StatusItem Widget for Post: {Post}", content.Uri);
 
         _content = content;
+
+        Activatable = mode switch
+        {
+            StatusItemMode.PostListItem => true,
+            StatusItemMode.ThreadParentPost => false,
+            StatusItemMode.ThreadReplyPost => true,
+            _ => throw new InvalidOperationException()
+        };
 
         // Set the handle label
         _postHandle?.SetVisible(string.IsNullOrEmpty(content.AuthorDisplayName) is false);
@@ -169,10 +200,23 @@ public class StatusItem : ListBoxRow
         }
     }
 
-    public StatusItem(StatusItemView content, ILoggerFactory loggerFactory)
-        : this(loggerFactory, new Builder("StatusItem.ui"), content)
+    public StatusItem(
+        StatusItemView content,
+        StatusItemMode mode,
+        ILoggerFactory loggerFactory,
+        IUserFeedService userFeedService,
+        INavigationProvider navigationProvider)
+        : this(
+            loggerFactory,
+            userFeedService,
+            navigationProvider,
+            new Builder("StatusItem.ui"),
+            content,
+            mode)
     {
     }
+
+    public StatusItemView GetContent() => _content;
 
     private Task SetEmbeddedContent(StatusItemView content)
     {
@@ -212,7 +256,10 @@ public class StatusItem : ListBoxRow
 
             var newRecordItem = new StatusItem(
                 new StatusItemView(viewRecord),
-                _loggerFactory);
+                StatusItemMode.PostListItem,
+                _loggerFactory,
+                _userFeedService,
+                _navigationProvider);
 
             _embeddedRecordDefContainer.Append(newRecordItem);
         }
@@ -298,7 +345,10 @@ public class StatusItem : ListBoxRow
 
         // Make the frame of the embedded link clickable
         var clickController = new GestureClick();
-        clickController.OnPressed += (_, _) => SystemFunction.TryOpenUrlInBrowser(externalContent.External.Uri);
+        clickController.OnReleased += (sender, args) =>
+        {
+            SystemFunction.TryOpenUrlInBrowser(externalContent.External.Uri);
+        };
 
         _embeddedContentFrame?.AddController(clickController);
 
@@ -354,7 +404,20 @@ public class StatusItem : ListBoxRow
 
     private void ReplyButtonOnClicked(Button sender, EventArgs args)
     {
-        throw new NotImplementedException();
+        switch (_mode)
+        {
+            case StatusItemMode.PostListItem or StatusItemMode.ThreadReplyPost:
+                _navigationProvider.Go(
+                    new StatusItemPage(
+                        _content.Uri,
+                        _userFeedService,
+                        _navigationProvider,
+                        _loggerFactory));
+                break;
+            case StatusItemMode.ThreadParentPost:
+                // TODO: Display reply box if parent on thread
+                break;
+        }
     }
     
     private static string GetSubHandle(StatusItemView content)

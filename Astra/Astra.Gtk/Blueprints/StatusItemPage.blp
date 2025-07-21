@@ -1,0 +1,32 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.NavigationPage _root {
+    title: _("Post");
+
+    Adw.ToolbarView _view {
+        [top]
+        Adw.HeaderBar {
+            show-title: true;
+        }
+
+        content: Gtk.Box {
+            orientation: vertical;
+
+            Gtk.ScrolledWindow scroll {
+                hexpand: true;
+                vexpand: true;
+                visible: true;
+                hscrollbar-policy: never;
+
+                child: Gtk.ListBox list {
+                    hexpand: false;
+                    vexpand: true;
+                    width-request: 300;
+                    selection-mode: none;
+                    show-separators: true;
+                };
+            }
+        };
+    }
+}
