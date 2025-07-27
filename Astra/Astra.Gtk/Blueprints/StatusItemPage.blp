@@ -13,6 +13,19 @@ Adw.NavigationPage _root {
         content: Gtk.Box {
             orientation: vertical;
 
+            Gtk.Box feed_spinner {
+                hexpand: true;
+                vexpand: true;
+                halign: center;
+                valign: center;
+
+                Gtk.Spinner {
+                    width-request: 75;
+                    height-request: 75;
+                    spinning: true;
+                }
+            }
+
             Gtk.ScrolledWindow scroll {
                 hexpand: true;
                 vexpand: true;

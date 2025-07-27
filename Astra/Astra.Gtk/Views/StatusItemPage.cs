@@ -18,6 +18,9 @@ public class StatusItemPage : Adw.NavigationPage
 
     [Connect("_view")]
     private readonly Adw.ToolbarView? _toolbarView = null;
+
+    [Connect("feed_spinner")]
+    private readonly Box? _spinnerContainer = null;
     
     private StatusItemPage(
         Builder builder,
@@ -62,9 +65,19 @@ public class StatusItemPage : Adw.NavigationPage
             return;
         }
         
+        // Set the title
+        var content = new StatusItemView(thread.Post);
+        
+        Title = $"{thread.Post.Author.DisplayName}";
+
+        if (!string.IsNullOrEmpty(content.StatusText))
+        {
+            Title += $": {content.StatusText}";
+        }
+        
         // Create the parent post
         var statusItemView = new StatusItem(
-            content: new StatusItemView(thread.Post),
+            content: content,
             mode: StatusItemMode.ThreadParentPost,
             _loggerFactory,
             _userFeedService,
@@ -91,5 +104,7 @@ public class StatusItemPage : Adw.NavigationPage
                 _listBox?.Append(replyItem);
             }
         }
+        
+        _spinnerContainer?.SetVisible(false);
     }
 }
