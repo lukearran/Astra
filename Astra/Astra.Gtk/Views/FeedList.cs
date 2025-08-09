@@ -3,6 +3,7 @@ using Astra.AtProtocol.Client.Models;
 using Astra.AtProtocol.Common;
 using Astra.AtProtocol.Common.Interfaces;
 using Astra.AtProtocol.Common.Models.Views;
+using Astra.Gtk.Views.Providers;
 using Gtk;
 using Gtk.Internal;
 using Microsoft.Extensions.Logging;
@@ -15,11 +16,17 @@ namespace Astra.Gtk.Views;
 
 public class Feed : Box
 {
-    [Connect("status_list_box")] private readonly ListBox? _feedListBox = null;
+    [Connect("status_list_box")]
+    private readonly ListBox? _feedListBox = null;
 
-    [Connect("feed_spinner")] private readonly Box? _feedSpinner = null;
+    [Connect("feed_spinner")]
+    private readonly Box? _feedSpinner = null;
 
-    [Connect("feed_scroll")] private readonly ScrolledWindow? _feedScroll = null;
+    [Connect("feed_scroll")]
+    private readonly ScrolledWindow? _feedScroll = null;
+
+    [Connect("banner")]
+    private readonly Adw.Banner? _banner = null;
 
     // Source
     private readonly AtFeed _source;
@@ -28,6 +35,7 @@ public class Feed : Box
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
     private readonly ICredentialProvider _credentialProvider;
+    private readonly INavigationProvider _navigationProvider;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<Feed> _logger;
     private readonly Builder _builder;
@@ -41,18 +49,36 @@ public class Feed : Box
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
         ILoggerFactory loggerFactory,
+        INavigationProvider navigationProvider,
         Builder builder) :
         base(new BoxHandle(builder.GetPointer("_root"), false))
     {
         builder.Connect(this);
+        ArgumentNullException.ThrowIfNull(_feedListBox);
 
         _source = source;
         _logger = loggerFactory.CreateLogger<Feed>();
         _sessionService = sessionService;
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
+        _navigationProvider = navigationProvider;
         _builder = builder;
         _loggerFactory = loggerFactory;
+
+        _feedListBox.OnRowActivated += (sender, args) =>
+        {
+            if (args.Row is StatusItem statusItem)
+            {
+                var statusContent = statusItem.GetContent();
+                
+                _navigationProvider.Go(
+                    new StatusItemPage(
+                        statusContent.Uri,
+                        _userFeedService,
+                        _navigationProvider,
+                        _loggerFactory));
+            }
+        };
 
         _ = InitializeAt(builder);
     }
@@ -62,13 +88,15 @@ public class Feed : Box
         ISessionService sessionService,
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory,
+        INavigationProvider navigationProvider)
         : this(
             source,
             sessionService,
             userFeedService,
             credentialProvider,
             loggerFactory,
+            navigationProvider,
             new Builder("Feed.ui"))
     {
     }
@@ -97,61 +125,93 @@ public class Feed : Box
     {
         await Task.Run(async () =>
         {
-            FeedResult feedResult;
-
-            if (_source.Type == CommonConstants.FollowingFeedTypeName)
+            try
             {
-                feedResult = await _userFeedService.GetFollowingFeed(
-                    limit: CommonConstants.FeedFetchLimit,
-                    cursor: cursor,
-                    token: CancellationToken.None);
+                FeedResult feedResult;
+
+                if (_source.Type == CommonConstants.FollowingFeedTypeName)
+                {
+                    feedResult = await _userFeedService.GetFollowingFeed(
+                        limit: CommonConstants.FeedFetchLimit,
+                        cursor: cursor,
+                        token: CancellationToken.None);
+                }
+                else
+                {
+                    feedResult = await _userFeedService.GetFeed(
+                        feedUri: _source.Value,
+                        limit: CommonConstants.FeedFetchLimit,
+                        cursor: cursor,
+                        token: CancellationToken.None);
+                }
+
+                _lastCursor = feedResult.Cursor ?? string.Empty;
+                
+                var statusUpdates = feedResult
+                    .Posts
+                    .Select(x => x.Post)
+                    .ToList();
+
+                var statusItems = statusUpdates
+                    .Select(status => new StatusItem(
+                        new StatusItemView(status),
+                        StatusItemMode.PostListItem,
+                        _loggerFactory,
+                        _userFeedService,
+                        _navigationProvider))
+                    .ToArray();
+
+                foreach (var statusItem in statusItems)
+                {
+                    _feedListBox?.Append(statusItem);
+                }
+
+                ShowSpinner(false);
+                HideBanner();
             }
-            else
+            catch
             {
-                feedResult = await _userFeedService.GetFeed(
-                    feedUri: _source.Value,
-                    limit: CommonConstants.FeedFetchLimit,
-                    cursor: cursor,
-                    token: CancellationToken.None);
+                ShowSpinner(false);
+                ShowBanner("Failed to fetch feed");
             }
-
-            _lastCursor = feedResult.Cursor ?? string.Empty;
-
-            var statusUpdates = feedResult
-                .Posts
-                .Select(x => x.Post)
-                .ToList();
-
-            var statusItems = statusUpdates
-                .Select(status => new StatusItem(new StatusItemView(status), _loggerFactory))
-                .ToArray();
-
-            foreach (var statusItem in statusItems)
-            {
-                _feedListBox?.Append(statusItem);
-            }
-
-            HideSpinner();
         });
     }
 
-    private void ShowSpinner()
+    private void ShowSpinner(bool enabled)
     {
-        _feedSpinner?.SetVisible(true);
-        _feedScroll?.SetVisible(false);
-    }
-
-    private void HideSpinner()
-    {
-        _feedSpinner?.SetVisible(false);
-        _feedScroll?.SetVisible(true);
+        _feedSpinner?.SetVisible(enabled);
+        _feedScroll?.SetVisible(!enabled);
     }
 
     public void Refresh()
     {
         _feedListBox?.RemoveAll();
         _lastCursor = string.Empty;
-        ShowSpinner();
+        
+        ShowSpinner(true);
+        ShowBanner("Refreshing...");
+        
         _ = FetchPosts();
+    }
+
+    private void ShowBanner(string message, int autoHideSec = 30)
+    {
+        if (_banner == null)
+        {
+            return;
+        }
+        
+        _banner.Title = message;
+        _banner.Revealed = true;
+    }
+
+    private void HideBanner()
+    {
+        if (_banner == null)
+        {
+            return;
+        }
+
+        _banner.Revealed = false;
     }
 }

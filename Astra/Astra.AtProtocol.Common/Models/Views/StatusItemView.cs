@@ -90,4 +90,6 @@ public class StatusItemView
             StatusText = post.Text ?? string.Empty;
         }
     }
+
+    public StatusItemView(ThreadViewPost thread) : this(thread.Post) { }
 }

@@ -9,6 +9,26 @@ namespace Astra.AtProtocol.Client.Services;
 
 public class UserFeedService(ATProtocol protocol) : BaseService(protocol), IUserFeedService
 {
+    public async Task<ThreadResult> GetPostThread(string postUri)
+    {
+        var result = 
+            await Protocol.Feed.GetPostThreadAsync(ATUri.Create(postUri));
+
+        var thread = (result.Value as GetPostThreadOutput)?.Thread;
+
+        if (thread is not ThreadViewPost view)
+        {
+            return new ThreadResult(
+                success: false,
+                message: $"Failed to fetch post: {postUri}");
+        }
+        
+        return new ThreadResult(
+            success: true,
+            message: $"Successfully fetched post: {postUri}",
+            post: view);
+    }
+    
     public async Task<FeedResult> GetFollowingFeed(int limit, CancellationToken token, string? cursor = null)
     {
         var (timelineOutputResult, error) = await Protocol.GetTimelineAsync(

@@ -1,0 +1,20 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.NavigationPage _root {
+    Adw.StatusPage _statusPage {
+        title: _("Oops, something went wrong!");
+        icon-name: "sad-computer-symbolic";
+
+        Box {
+            margin-top: 18;
+            orientation: vertical;
+            halign: center;
+
+            LinkButton report_issue_button {
+                label: _("Report this issue");
+                uri: "https://github.com/lukearran/Astra/issues/new";
+            }
+        }
+    }
+}
