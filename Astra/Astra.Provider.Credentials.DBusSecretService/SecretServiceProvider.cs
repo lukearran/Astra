@@ -13,7 +13,7 @@ public class SecretServiceProvider(ILogger<ICredentialProvider> logger) : ICrede
     
     private readonly Dictionary<string, string> _attributes = new()
     {
-        { "name", "app.astra.gtk.credential" }
+        { "name", "io.github.lukearran.astra.credential" }
     };
     
     private SecretService? _secretService;

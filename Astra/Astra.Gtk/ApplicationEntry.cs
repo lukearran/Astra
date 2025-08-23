@@ -39,7 +39,7 @@ public class ApplicationEntry
         _application.OnStartup += OnStartup;
         _application.OnActivate += OnActivate;
 
-        SetupResources();
+        SetupResources(_logger);
     }
 
     public void Run(string[] args) => _application.RunWithSynchronizationContext(args);
@@ -136,36 +136,21 @@ public class ApplicationEntry
         _mainWindow.Show();
     }
 
-    private static void SetupResources()
+    private static void SetupResources(ILogger<ApplicationEntry> logger)
     {
         var gResourcePath =
             Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? string.Empty) +
-            "/app.astra.gtk.gresource";
-
+            "/io.github.lukearran.astra.gresource";
+        
         if (File.Exists(gResourcePath))
         {
+            logger.LogInformation("gResourcePath exists at {Path}", gResourcePath);
+            
             Gio.Functions.ResourcesRegister(Gio.Functions.ResourceLoad(gResourcePath));
         }
         else
         {
-            var prefixes = new List<string>
-            {
-                Directory.GetParent(Directory
-                    .GetParent(Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
-                    .FullName).FullName,
-                Directory.GetParent(Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)))
-                    .FullName,
-                "/usr"
-            };
-
-            foreach (var prefix in prefixes.Where(prefix =>
-                         File.Exists(prefix + "/share/app.astra.gtk/app.astra.gtk.gresource")))
-            {
-                Gio.Functions.ResourcesRegister(
-                    Gio.Functions.ResourceLoad(
-                        Path.GetFullPath(prefix + "/share/app.astra.gtk/app.astra.gtk.gresource")));
-                break;
-            }
+            throw new InvalidOperationException($"No file at expected gResourcePath: {gResourcePath}");
         }
     }
 }

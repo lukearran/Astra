@@ -2,7 +2,7 @@ namespace Astra.Gtk;
 
 public static class Constants
 {
-    public const string AppId = "app.astra.gtk";
+    public const string AppId = "io.github.lukearran.astra";
 
     public const string AppShortName = "Astra";
     

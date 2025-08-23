@@ -101,6 +101,10 @@ ClientBin/
 
 *.publishsettings
 
+# Flatpak builder
+.flatpak-builder/
+repo/
+
 # RIA/Silverlight projects
 Generated_Code/
 
@@ -133,3 +137,5 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+nuget-sources.json
+build_flatpak.sh

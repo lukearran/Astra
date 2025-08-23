@@ -70,16 +70,16 @@
       <Resource Include="Resources\people-symbolic.svg">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
-      <None Remove="Resources\app.astra.gtk.gresource.xml" />
-      <Resource Include="Resources\app.astra.gtk.gresource.xml">
+      <None Remove="Resources\io.github.lukearran.astra.gresource.xml" />
+      <Resource Include="Resources\io.github.lukearran.astra.gresource.xml">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
       <None Remove="Resources\user-home-symbolic.svg" />
       <Resource Include="Resources\user-home-symbolic.svg">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
-      <None Remove="Resources\app.astra.gtk.css" />
-      <Resource Include="Resources\app.astra.gtk.css">
+      <None Remove="Resources\io.github.lukearran.astra.css" />
+      <Resource Include="Resources\io.github.lukearran.astra.css">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Resource>
       <None Remove="Resources\video-clip-symbolic.svg" />
@@ -95,7 +95,7 @@
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
         <Exec Command="echo Compiling extra resources..." />
         <Exec Command="blueprint-compiler batch-compile ./Blueprints ./Blueprints ./Blueprints/*.blp" />
-        <Exec Command="glib-compile-resources --sourcedir ./Resources ./Resources/app.astra.gtk.gresource.xml --target=$(OutDir)/app.astra.gtk.gresource" />
+        <Exec Command="glib-compile-resources --sourcedir ./Resources ./Resources/io.github.lukearran.astra.gresource.xml --target=$(OutDir)/io.github.lukearran.astra.gresource" />
     </Target>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
