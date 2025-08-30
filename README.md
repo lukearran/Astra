@@ -29,7 +29,7 @@
     - [ ] Repost Indicator
         - [ ] Submit repost
     - [ ] Quote post
-    - [ ] View Replies
+    - [X] View Replies
     - [ ] Change feeds
       - [X] Pinned feeds
       - [ ] Manage all feeds
@@ -42,6 +42,16 @@
   - [ ] Change provider
 
 See open issues for further detail.
+
+## 🚚 Building from source using Flatpak
+
+To build and run the application as a Flatpak, ensure you have "flatpak-builder" installed on your system before executing the following comands from the root directory of this repository.
+
+``` bash
+flatpak-builder build-dir --user --install-deps-from=flathub --download-only io.github.lukearran.astra.yml
+flatpak-builder build-dir --user --force-clean --install --repo=repo io.github.lukearran.astra.yml
+flatpak run io.github.lukearran.astra.yml
+```
 
 ## 🛠️ Building from source
 
