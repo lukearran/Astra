@@ -58,6 +58,7 @@ flatpak run io.github.lukearran.astra.yml
 #### 1. Prerequisites
 
 - [.NET SDK 8.0](https://learn.microsoft.com/en-us/dotnet/core/install/linux-ubuntu-install?tabs=dotnet9&pivots=os-linux-ubuntu-2404)
+- [Blueprint Compiler](https://gitlab.gnome.org/GNOME/blueprint-compiler)
 
 #### 2. Clone the repository
 
