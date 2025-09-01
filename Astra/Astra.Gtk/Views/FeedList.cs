@@ -32,6 +32,7 @@ public class Feed : Box
     private readonly AtFeed _source;
     
     // Services
+    private readonly IToastProvider _toastProvider;
     private readonly ISessionService _sessionService;
     private readonly IUserFeedService _userFeedService;
     private readonly ICredentialProvider _credentialProvider;
@@ -50,6 +51,7 @@ public class Feed : Box
         ICredentialProvider credentialProvider,
         ILoggerFactory loggerFactory,
         INavigationProvider navigationProvider,
+        IToastProvider toastProvider,
         Builder builder) :
         base(new BoxHandle(builder.GetPointer("_root"), false))
     {
@@ -64,6 +66,7 @@ public class Feed : Box
         _navigationProvider = navigationProvider;
         _builder = builder;
         _loggerFactory = loggerFactory;
+        _toastProvider = toastProvider;
 
         _feedListBox.OnRowActivated += (sender, args) =>
         {
@@ -76,6 +79,7 @@ public class Feed : Box
                         statusContent.Uri,
                         _userFeedService,
                         _navigationProvider,
+                        _toastProvider,
                         _loggerFactory));
             }
         };
@@ -89,7 +93,8 @@ public class Feed : Box
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
         ILoggerFactory loggerFactory,
-        INavigationProvider navigationProvider)
+        INavigationProvider navigationProvider,
+        IToastProvider toastProvider)
         : this(
             source,
             sessionService,
@@ -97,6 +102,7 @@ public class Feed : Box
             credentialProvider,
             loggerFactory,
             navigationProvider,
+            toastProvider,
             new Builder("Feed.ui"))
     {
     }
@@ -158,7 +164,8 @@ public class Feed : Box
                         StatusItemMode.PostListItem,
                         _loggerFactory,
                         _userFeedService,
-                        _navigationProvider))
+                        _navigationProvider,
+                        _toastProvider))
                     .ToArray();
 
                 foreach (var statusItem in statusItems)

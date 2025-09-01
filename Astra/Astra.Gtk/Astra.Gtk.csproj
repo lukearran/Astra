@@ -10,6 +10,7 @@
     <ItemGroup>
       <PackageReference Include="GirCore.Adw-1" Version="0.6.3" />
       <PackageReference Include="GirCore.Gtk-4.0" Version="0.6.3" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
       <PackageReference Include="Serilog" Version="4.3.0" />
       <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />

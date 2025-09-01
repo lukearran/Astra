@@ -31,6 +31,7 @@ public enum StatusItemMode
 public class StatusItem : ListBoxRow
 {
     // Logger
+    private readonly IToastProvider _toastProvider;
     private readonly IUserFeedService _userFeedService;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<StatusItem> _logger;
@@ -121,6 +122,7 @@ public class StatusItem : ListBoxRow
         ILoggerFactory loggerFactory,
         IUserFeedService userFeedService,
         INavigationProvider navigationProvider,
+        IToastProvider toastProvider,
         Builder builder,
         StatusItemView content,
         StatusItemMode mode) : base(new ListBoxRowHandle(
@@ -131,6 +133,7 @@ public class StatusItem : ListBoxRow
 
         _mode = mode;
 
+        _toastProvider = toastProvider;
         _userFeedService = userFeedService;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<StatusItem>();
@@ -205,11 +208,13 @@ public class StatusItem : ListBoxRow
         StatusItemMode mode,
         ILoggerFactory loggerFactory,
         IUserFeedService userFeedService,
-        INavigationProvider navigationProvider)
+        INavigationProvider navigationProvider,
+        IToastProvider toastProvider)
         : this(
             loggerFactory,
             userFeedService,
             navigationProvider,
+            toastProvider,
             new Builder("StatusItem.ui"),
             content,
             mode)
@@ -259,7 +264,8 @@ public class StatusItem : ListBoxRow
                 StatusItemMode.PostListItem,
                 _loggerFactory,
                 _userFeedService,
-                _navigationProvider);
+                _navigationProvider,
+                _toastProvider);
 
             _embeddedRecordDefContainer.Append(newRecordItem);
         }
@@ -306,7 +312,7 @@ public class StatusItem : ListBoxRow
             }
             catch (SystemException ex)
             {
-                Console.Write(ex);
+                _logger.LogError(ex, "Failed to set photo card using network resource");
             }
         }
     }
@@ -412,6 +418,7 @@ public class StatusItem : ListBoxRow
                         _content.Uri,
                         _userFeedService,
                         _navigationProvider,
+                        _toastProvider,
                         _loggerFactory));
                 break;
             case StatusItemMode.ThreadParentPost:
@@ -431,17 +438,33 @@ public class StatusItem : ListBoxRow
         return createdAt != null ? $"{handle} · {createdAt.Value.ToRelativeDate()}" : handle;
     }
     
-    private static void HeartButtonOnToggled(ToggleButton sender, EventArgs args)
+    private void HeartButtonOnToggled(ToggleButton sender, EventArgs args)
     {
         SetToggleButtonStyle(sender, "post_love_button_toggled");
+        
+        _toastProvider.ShowToast(
+            message: "Not yet implemented. Follow GitHub Issue for progress.",
+            buttonName: "View Issue",
+            buttonAction: (toast, eventArgs) =>
+            {
+                SystemFunction.TryOpenUrlInBrowser("https://github.com/lukearran/Astra/issues/7");
+            });
     }
 
-    private static void RepostButtonOnToggled(ToggleButton sender, EventArgs args)
+    private void RepostButtonOnToggled(ToggleButton sender, EventArgs args)
     {
         SetToggleButtonStyle(sender, "post_repost_button_toggled");
+        
+        _toastProvider.ShowToast(
+            message: "Not yet implemented. Follow GitHub Issue for progress.",
+            buttonName: "View Issue",
+            buttonAction: (toast, eventArgs) =>
+            {
+                SystemFunction.TryOpenUrlInBrowser("https://github.com/lukearran/Astra/issues/7");
+            });
     }
 
-    private static void SetToggleButtonStyle(ToggleButton sender, string styleClass)
+    private void SetToggleButtonStyle(ToggleButton sender, string styleClass)
     {
         if (sender.Active)
         {

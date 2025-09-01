@@ -1,0 +1,50 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Astra", "Astra", "{2CBEAA47-D16F-ABB2-4967-B5DE1197F721}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Client", "Astra\Astra.AtProtocol.Client\Astra.AtProtocol.Client.csproj", "{12260564-4EDD-482F-9A24-B3E455DB679E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Common", "Astra\Astra.AtProtocol.Common\Astra.AtProtocol.Common.csproj", "{48ADCF13-1810-2D64-5F96-7A1AF82248E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.Gtk", "Astra\Astra.Gtk\Astra.Gtk.csproj", "{10633717-8277-A144-2AF2-AEA5B0E26A32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.Provider.Credentials.DBusSecretService", "Astra\Astra.Provider.Credentials.DBusSecretService\Astra.Provider.Credentials.DBusSecretService.csproj", "{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{12260564-4EDD-482F-9A24-B3E455DB679E} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+		{10633717-8277-A144-2AF2-AEA5B0E26A32} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {126043D8-2E8F-4B9B-8B08-7E2E4BEF4C94}
+	EndGlobalSection
+EndGlobal

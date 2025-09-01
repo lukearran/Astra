@@ -13,32 +13,12 @@ namespace Astra.Gtk.Views;
 public class FeedNavPage : Adw.NavigationPage
 {
     private static FeedNavPage? _instance;
-
-    public static FeedNavPage Instance(
-        ILoggerFactory loggerFactory,
-        ISessionService sessionService,
-        IUserFeedService userFeedService,
-        ICredentialProvider credentialProvider,
-        Adw.OverlaySplitView sourceOverlay,
-        INavigationProvider navigationProvider)
-    {
-        return _instance ??= new FeedNavPage(
-            loggerFactory,
-            sessionService,
-            userFeedService,
-            credentialProvider,
-            sourceOverlay,
-            navigationProvider);
-    }
     
     [Connect("feed_stack")]
     private readonly Adw.ViewStack? _feedStack = null;
     
     [Connect("refresh_button")]
     private readonly Button? _refreshButton = null;
-    
-    [Connect("toast_overlay")]
-    private readonly Adw.ToastOverlay? _toastOverlay = null;
     
     [Connect("show_sidebar_button")]
     private readonly ToggleButton? _toggleButton = null;
@@ -49,6 +29,26 @@ public class FeedNavPage : Adw.NavigationPage
     private readonly ICredentialProvider _credentialProvider;
     private readonly ILogger<FeedNavPage> _logger;
     private readonly ILoggerFactory _loggerFactory;
+    private readonly IToastProvider _toastProvider;
+    
+    public static FeedNavPage Instance(
+        ILoggerFactory loggerFactory,
+        ISessionService sessionService,
+        IUserFeedService userFeedService,
+        ICredentialProvider credentialProvider,
+        Adw.OverlaySplitView sourceOverlay,
+        INavigationProvider navigationProvider,
+        IToastProvider toastProvider)
+    {
+        return _instance ??= new FeedNavPage(
+            loggerFactory,
+            sessionService,
+            userFeedService,
+            credentialProvider,
+            sourceOverlay,
+            navigationProvider,
+            toastProvider);
+    }
     
     private FeedNavPage(
         ILoggerFactory loggerFactory,
@@ -57,6 +57,7 @@ public class FeedNavPage : Adw.NavigationPage
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
         INavigationProvider navigationProvider,
+        IToastProvider toastProvider,
         Adw.OverlaySplitView sourceOverlay) : base(
         new NavigationPageHandle(builder.GetPointer("_root"), false))
     {
@@ -67,6 +68,7 @@ public class FeedNavPage : Adw.NavigationPage
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
         _loggerFactory = loggerFactory;
+        _toastProvider = toastProvider;
         _logger = _loggerFactory.CreateLogger<FeedNavPage>();
         
         sourceOverlay.BindProperty(
@@ -94,7 +96,8 @@ public class FeedNavPage : Adw.NavigationPage
         IUserFeedService userFeedService,
         ICredentialProvider credentialProvider,
         Adw.OverlaySplitView sourceOverlay,
-        INavigationProvider navigationProvider)
+        INavigationProvider navigationProvider,
+        IToastProvider toastProvider)
         : this(
             loggerFactory,
             new Builder("FeedNavPage.ui"),
@@ -102,6 +105,7 @@ public class FeedNavPage : Adw.NavigationPage
             userFeedService,
             credentialProvider,
             navigationProvider,
+            toastProvider,
             sourceOverlay)
     {
     }
@@ -138,7 +142,8 @@ public class FeedNavPage : Adw.NavigationPage
                     _userFeedService,
                     _credentialProvider,
                     _loggerFactory,
-                    _navigationProvider);
+                    _navigationProvider,
+                    _toastProvider);
 
                 _feedStack?.AddTitledWithIcon(
                     child: feedView,
@@ -150,11 +155,8 @@ public class FeedNavPage : Adw.NavigationPage
             {
                 _logger.LogError(ex, "Failed to instantiate feed '{FeedName}'", userFeed.Id);
                 
-                ShowToastMessage($"Error loading {feedName ?? "your feed"}");
+                _toastProvider.ShowToast($"Error loading {feedName ?? "your feed"}");
             }
         }
     }
-
-    private void ShowToastMessage(string message) =>
-        _toastOverlay?.AddToast(Adw.Toast.New(message));
 }
