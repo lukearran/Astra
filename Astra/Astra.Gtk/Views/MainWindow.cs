@@ -19,6 +19,9 @@ public class MainWindow : Adw.ApplicationWindow
     
     [Connect("navigation_view")]
     private readonly Adw.NavigationView? _navigationView = null;
+
+    [Connect("toast_overlay")]
+    private readonly Adw.ToastOverlay? _toastOverlay = null;
     
     [Connect("avatar")]
     private readonly Adw.Avatar? _avatar = null;
@@ -30,6 +33,8 @@ public class MainWindow : Adw.ApplicationWindow
     private readonly IUserFeedService _userFeedService;
     
     private readonly ICredentialProvider _credentialProvider;
+
+    private readonly IToastProvider _toastProvider;
     
     private readonly ILogger<MainWindow> _logger;
     
@@ -53,6 +58,8 @@ public class MainWindow : Adw.ApplicationWindow
         _sessionService = sessionService;
         _userFeedService = userFeedService;
         _credentialProvider = credentialProvider;
+        _toastProvider = new ToastProvider(
+            _toastOverlay ?? throw new ArgumentNullException(nameof(_toastOverlay)));
         _navigationProvider = new NavigationProvider(
             _navigationView ?? throw new ArgumentNullException(nameof(_navigationView)));
         
@@ -105,7 +112,8 @@ public class MainWindow : Adw.ApplicationWindow
                 _userFeedService,
                 _credentialProvider,
                 _overlaySplitView ?? throw new NullReferenceException(),
-                _navigationProvider));
+                _navigationProvider,
+                _toastProvider));
         }
     }
 

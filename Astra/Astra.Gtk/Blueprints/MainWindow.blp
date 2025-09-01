@@ -53,7 +53,9 @@ Adw.ApplicationWindow main_window {
       };
     };
 
-    content: Adw.NavigationView navigation_view {};
+    content: Adw.ToastOverlay toast_overlay {
+      Adw.NavigationView navigation_view {}
+    };
   };
 }
 

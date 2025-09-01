@@ -236,19 +236,20 @@ ListBoxRow _root {
             ]
           }
 
-          MenuButton status_menu_button {
-            menu-model: secondary_button_menu;
+          // TODO: Removed for now, add back later
+          // MenuButton status_menu_button {
+          //   menu-model: secondary_button_menu;
 
-            Adw.ButtonContent {
-              icon-name: "menu-large-symbolic";
-            }
+          //   Adw.ButtonContent {
+          //     icon-name: "menu-large-symbolic";
+          //   }
 
-            styles [
-              "transparent",
-              "post_menu_button",
-              "opaque",
-            ]
-          }
+          //   styles [
+          //     "transparent",
+          //     "post_menu_button",
+          //     "opaque",
+          //   ]
+          // }
         }
       }
     }
@@ -256,7 +257,7 @@ ListBoxRow _root {
 }
 
 menu secondary_button_menu {
-  item ("Item 1")
-  item ("Item 2")
-  item ("Item 3")
+  item ("Mute Account")
+  item ("Block Account")
+  item ("Report Post")
 }

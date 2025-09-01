@@ -11,6 +11,7 @@ public class StatusItemPage : Adw.NavigationPage
 {
     private readonly IUserFeedService _userFeedService;
     private readonly INavigationProvider  _navigationProvider;
+    private readonly IToastProvider _toastProvider;
     private readonly ILoggerFactory _loggerFactory;
     
     [Connect("list")]
@@ -26,6 +27,7 @@ public class StatusItemPage : Adw.NavigationPage
         Builder builder,
         IUserFeedService userFeedService,
         INavigationProvider navigationProvider,
+        IToastProvider toastProvider,
         ILoggerFactory loggerFactory,
         string postUri) : base(
         new NavigationPageHandle(builder.GetPointer("_root"), 
@@ -36,6 +38,7 @@ public class StatusItemPage : Adw.NavigationPage
         _userFeedService = userFeedService;
         _navigationProvider = navigationProvider;
         _loggerFactory = loggerFactory;
+        _toastProvider = toastProvider;
 
         _ = Fetch(postUri);
     }
@@ -44,10 +47,12 @@ public class StatusItemPage : Adw.NavigationPage
         string postUri,
         IUserFeedService userFeedService,
         INavigationProvider navigationProvider,
+        IToastProvider toastProvider,
         ILoggerFactory loggerFactory)
         : this(new Builder("StatusItemPage.ui"),
             userFeedService,
             navigationProvider,
+            toastProvider,
             loggerFactory,
             postUri)
     {
@@ -81,7 +86,8 @@ public class StatusItemPage : Adw.NavigationPage
             mode: StatusItemMode.ThreadParentPost,
             _loggerFactory,
             _userFeedService,
-            _navigationProvider);
+            _navigationProvider,
+            _toastProvider);
 
         _listBox?.Append(statusItemView);
         
@@ -97,7 +103,8 @@ public class StatusItemPage : Adw.NavigationPage
                     mode: StatusItemMode.ThreadReplyPost,
                     _loggerFactory,
                     _userFeedService,
-                    _navigationProvider));
+                    _navigationProvider,
+                    _toastProvider));
             
             foreach (var replyItem in replyResult)
             {
