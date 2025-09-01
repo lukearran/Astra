@@ -1,23 +1,16 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.Gtk", "Astra.Gtk\Astra.Gtk.csproj", "{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Astra", "Astra", "{2CBEAA47-D16F-ABB2-4967-B5DE1197F721}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Client", "Astra.AtProtocol.Client\Astra.AtProtocol.Client.csproj", "{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Client", "Astra.AtProtocol.Client\Astra.AtProtocol.Client.csproj", "{12260564-4EDD-482F-9A24-B3E455DB679E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Common", "Astra.AtProtocol.Common\Astra.AtProtocol.Common.csproj", "{CE843CA6-05CE-4789-8DAF-643FA4800905}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.AtProtocol.Common", "Astra.AtProtocol.Common\Astra.AtProtocol.Common.csproj", "{48ADCF13-1810-2D64-5F96-7A1AF82248E3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{7FFBD950-D05F-4242-B506-105F7F666E55}"
-	ProjectSection(SolutionItems) = preProject
-		..\README.md = ..\README.md
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.Gtk", "Astra.Gtk\Astra.Gtk.csproj", "{10633717-8277-A144-2AF2-AEA5B0E26A32}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{BEAC1940-D8D5-4626-8AA4-9F4344F87EAA}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Credentials", "Credentials", "{3AE8664F-DD86-40DA-8711-76DD61DE3904}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.Provider.Credentials.DBusSecretService", "Astra.Provider.Credentials.DBusSecretService\Astra.Provider.Credentials.DBusSecretService.csproj", "{1A533F3C-769B-4105-A7AB-079B8E3418E1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{9A21DB31-ED5F-4936-907F-4BEB8FE4A6E7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Astra.Provider.Credentials.DBusSecretService", "Astra.Provider.Credentials.DBusSecretService\Astra.Provider.Credentials.DBusSecretService.csproj", "{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,25 +18,33 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E52F3805-E61D-4B5C-9D4B-A1F520C089C6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D9A4DBF1-8BC8-443C-B65F-36923CF7A4F9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CE843CA6-05CE-4789-8DAF-643FA4800905}.Release|Any CPU.Build.0 = Release|Any CPU
-		{1A533F3C-769B-4105-A7AB-079B8E3418E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1A533F3C-769B-4105-A7AB-079B8E3418E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1A533F3C-769B-4105-A7AB-079B8E3418E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1A533F3C-769B-4105-A7AB-079B8E3418E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12260564-4EDD-482F-9A24-B3E455DB679E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10633717-8277-A144-2AF2-AEA5B0E26A32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3AE8664F-DD86-40DA-8711-76DD61DE3904} = {BEAC1940-D8D5-4626-8AA4-9F4344F87EAA}
-		{1A533F3C-769B-4105-A7AB-079B8E3418E1} = {3AE8664F-DD86-40DA-8711-76DD61DE3904}
+		{12260564-4EDD-482F-9A24-B3E455DB679E} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+		{48ADCF13-1810-2D64-5F96-7A1AF82248E3} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+		{10633717-8277-A144-2AF2-AEA5B0E26A32} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+		{F6B17F31-85AB-38EC-2D20-B92963F6F0D1} = {2CBEAA47-D16F-ABB2-4967-B5DE1197F721}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {126043D8-2E8F-4B9B-8B08-7E2E4BEF4C94}
 	EndGlobalSection
 EndGlobal
