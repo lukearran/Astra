@@ -8,7 +8,7 @@
   <img width="500" src="./docs/images/feed_screenshot.png">
 </p>
 
-> [!WARNING]  
+> [!WARNING]
 > This project is still early in development and is **not** ready for daily use.
 
 ## 🛣️ Roadmap
@@ -48,10 +48,15 @@ See open issues for further detail.
 To build and run the application as a Flatpak, ensure you have "flatpak-builder" installed on your system before executing the following comands from the root directory of this repository.
 
 ``` bash
+# 1) Copy and save the dotnet NuGet sources generator script flatpak-dotnet-generator.py from the Flatpak Builder Tools repository
 wget -P ~/src https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/dotnet/flatpak-dotnet-generator.py
+# 2) Run the script to generate the NuGet sources file
 python3 ~/src/flatpak-dotnet-generator.py --dotnet 8 --freedesktop 24.08 nuget-sources.json ~/src/Astra/Astra/Astra.Gtk/Astra.Gtk.csproj
+# 3) Install dependencies from flatpak
 flatpak-builder build-dir --user --install-deps-from=flathub --download-only io.github.lukearran.astra.yml
+# 4) Build and install using Flatpak builder
 flatpak-builder build-dir --user --force-clean --install --repo=repo io.github.lukearran.astra.yml
+# 5) Run the installed flatpak application
 flatpak run io.github.lukearran.astra.yml
 ```
 
