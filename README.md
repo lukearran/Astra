@@ -48,6 +48,8 @@ See open issues for further detail.
 To build and run the application as a Flatpak, ensure you have "flatpak-builder" installed on your system before executing the following comands from the root directory of this repository.
 
 ``` bash
+wget -P ~/src https://raw.githubusercontent.com/flatpak/flatpak-builder-tools/master/dotnet/flatpak-dotnet-generator.py
+python3 ~/src/flatpak-dotnet-generator.py --dotnet 8 --freedesktop 24.08 nuget-sources.json ~/src/Astra/Astra/Astra.Gtk/Astra.Gtk.csproj
 flatpak-builder build-dir --user --install-deps-from=flathub --download-only io.github.lukearran.astra.yml
 flatpak-builder build-dir --user --force-clean --install --repo=repo io.github.lukearran.astra.yml
 flatpak run io.github.lukearran.astra.yml
